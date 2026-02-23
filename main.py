@@ -62,6 +62,8 @@ def main():
 
                 loaded_weights, loaded_biases, NeuralNetTraining.epsilon, episodes_counter = NeuralNetUtilities.load_model()
 
+                replay_buffer.load_buffer()
+
                 if loaded_weights is not None and loaded_biases is not None:
                     neural_net.weights = loaded_weights
                     neural_net.biases = loaded_biases
@@ -128,6 +130,7 @@ def main():
                             print('Epsilon: ', NeuralNetTraining.epsilon)
                             print('Reward: ', total_reward)
                             print('Episode: ', episodes_counter)
+                            print('Buffer size: ', len(replay_buffer.buffer))
 
                             total_reward = 0
                             continue
@@ -142,6 +145,9 @@ def main():
 
                     if frames_count % SAVE_INTERVAL == 0:
                         NeuralNetUtilities.save_model(neural_net.weights, neural_net.biases, NeuralNetTraining.epsilon, episodes_counter)
+
+                    if episodes_counter % 100 == 0:
+                        replay_buffer.save_buffer()
 
     except KeyboardInterrupt:
         if is_ai_running:

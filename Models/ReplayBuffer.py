@@ -1,6 +1,8 @@
 import random
-from collections import deque
 import numpy as np
+import pickle
+
+from collections import deque
 
 class ReplayBuffer:
 
@@ -17,6 +19,20 @@ class ReplayBuffer:
         states, actions, rewards, next_states, dones = zip(*batch)
 
         return np.array(states), np.array(actions), np.array(rewards), np.array(next_states), np.array(dones)
+
+    def save_buffer(self, file_name: str = 'HK_Buffer.pkl'):
+        with open(file_name, 'wb') as f:
+            pickle.dump(self.buffer, f, protocol=pickle.HIGHEST_PROTOCOL)
+        print('💾 ReplayBuffer saved')
+
+    def load_buffer(self, file_name: str = 'HK_Buffer.pkl'):
+        try:
+            with open(file_name, 'rb') as f:
+                self.buffer = pickle.load(f)
+            print("💾 ReplayBuffer loaded")
+        except FileNotFoundError:
+            print("⚠️ ReplayBuffer file not found. Starting with empty buffer.")
+            self.buffer = deque(maxlen=ReplayBuffer.CAPACITY)
 
     def __len__(self):
         return len(self.buffer)

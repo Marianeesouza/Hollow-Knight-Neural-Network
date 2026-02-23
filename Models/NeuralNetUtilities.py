@@ -42,7 +42,7 @@ class NeuralNetUtilities:
 
         except FileNotFoundError:
             print("⚠️ File not found. Neural Network restarting learning")
-            return None, None, 1
+            return None, None, 1, 0
 
 
     # Reward

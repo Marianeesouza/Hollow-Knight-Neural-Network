@@ -1,0 +1,40 @@
+import vgamepad as vg
+import time
+
+class VirtualGamePad:
+
+    def __init__(self):
+
+        self.gamepad = vg.VX360Gamepad()
+
+        self.commands = {
+            0: vg.XUSB_BUTTON.XUSB_GAMEPAD_X,           # attack
+            1: vg.XUSB_BUTTON.XUSB_GAMEPAD_B,           # cast
+            2: vg.XUSB_BUTTON.XUSB_GAMEPAD_DPAD_LEFT,   # move left
+            3: vg.XUSB_BUTTON.XUSB_GAMEPAD_DPAD_RIGHT,  # move right
+            5: vg.XUSB_BUTTON.XUSB_GAMEPAD_A,           # jump
+            #6: vg.XUSB_BUTTON.XUSB_GAMEPAD_B,           # heal
+            6: None                                     # dash
+        }
+
+    def update_gamepad(self, active_actions):
+        for i, button in self.commands.items():
+
+            if i in active_actions:
+                if i == 6:
+                    self.update_trigger(1)
+                else:
+                    self.gamepad.press_button(button=button)
+            else:
+                if i == 6:
+                    self.update_trigger(0)
+                else:
+                    self.gamepad.release_button(button=button)
+
+        # Envia todos os estados de uma vez
+        self.gamepad.update()
+
+    def update_trigger(self, value):
+
+        self.gamepad.right_trigger(value)
+        self.gamepad.update()

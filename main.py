@@ -127,6 +127,9 @@ def main():
                             NeuralNetUtilities.save_model(neural_net.weights, neural_net.biases,
                                                           NeuralNetTraining.epsilon, episodes_counter)
 
+                            if episodes_counter % 100 == 0:
+                                replay_buffer.save_buffer()
+
                             print('Epsilon: ', NeuralNetTraining.epsilon)
                             print('Reward: ', total_reward)
                             print('Episode: ', episodes_counter)
@@ -146,12 +149,10 @@ def main():
                     if frames_count % SAVE_INTERVAL == 0:
                         NeuralNetUtilities.save_model(neural_net.weights, neural_net.biases, NeuralNetTraining.epsilon, episodes_counter)
 
-                    if episodes_counter % 100 == 0:
-                        replay_buffer.save_buffer()
-
     except KeyboardInterrupt:
         if is_ai_running:
             NeuralNetUtilities.save_model(neural_net.weights, neural_net.biases, NeuralNetTraining.epsilon, episodes_counter)
+            replay_buffer.save_buffer()
     finally:
         pipe.disconnect()
 

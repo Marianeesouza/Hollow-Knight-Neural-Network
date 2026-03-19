@@ -1,158 +1,141 @@
-import random
+import torch
 import numpy as np
 
 from Models import ClientPipe
 from Models.DataHandler import DataHandler
-from Models.NeuralNet import NeuralNet
+from Models.ActorCritic import ActorCritic
 from Models.NeuralNetTraining import NeuralNetTraining
 from Models.NeuralNetUtilities import NeuralNetUtilities
-from Models.ReplayBuffer import ReplayBuffer
+from Models.RolloutBuffer import RolloutBuffer
 from Models.VirtualGamePad import VirtualGamePad
+from collections import deque
 
-SAVE_INTERVAL = 3600
-TARGET_UPDATE = 1000
-BATCH_SIZE = 64
-DISCOUNT_FACTOR = 0.99
-BOSS_SCENE_HASH = 383855111
+SAVE_INTERVAL = 90000
+UPDATE_TIMESTEP = 2048
+BOSS_SCENE_HASH = 423158243 # Hornet
+NUM_FRAMES = 4
 
 def main():
     pipe = ClientPipe.Pipe()
     pipe.connect()
 
     frames_count = 0
-
-    neural_net = NeuralNet()
-    target_net = NeuralNet()
-
-    is_ai_running = False
-    is_ai_training = True
-
-    replay_buffer = ReplayBuffer()
-
-    virtual_gamepad = VirtualGamePad()
-
     total_reward = 0
     episodes_counter = 0
 
+    actor_critic = None
+    ppo_trainer = None
+    rollout_buffer = RolloutBuffer()
+    virtual_gamepad = VirtualGamePad()
+
+    frame_stack = deque(maxlen=NUM_FRAMES)
+
+    is_ai_running = False
+
     old_state = None
     old_data = None
-
-    boss_scene = None
+    last_action = None
+    last_log_prob = None
+    last_value = None
 
     try:
         while True:
 
-            # retrieving the data from the pipe (Hollow Knight raw data)
+            #retrieving the data from the pipe (Hollow Knight raw data)
             state = pipe.read_state()
 
             if state is None:
                 print("⚠️ Connection lost.")
-                if is_ai_running:
-                    NeuralNetUtilities.save_model(neural_net.weights, neural_net.biases, NeuralNetTraining.epsilon, episodes_counter)
+                if is_ai_running and actor_critic is not None:
+                    NeuralNetUtilities.save_model(actor_critic, ppo_trainer.optimizer, episodes_counter)
                 break
 
             boss_scene = state['bossScene']
 
-            # treating the data from the pipe
-            data = DataHandler.treat_data(state)
+            data = DataHandler.treat_data(state)    # treating the data from the pipe
 
-            # only start the neural_net (is_ai_running) if the player is in the boss scene
+            #only start the neural_net (is_ai_running) if the player is in the boss scene
             if (boss_scene is not None and boss_scene == BOSS_SCENE_HASH) and not is_ai_running:
-                neural_net.initialize(DataHandler.stored_size(data))
 
-                loaded_weights, loaded_biases, NeuralNetTraining.epsilon, episodes_counter = NeuralNetUtilities.load_model()
+                input_dim = DataHandler.stored_size(data) * NUM_FRAMES
+                output_dim = 9
 
-                replay_buffer.load_buffer()
+                actor_critic = ActorCritic(input_dim, output_dim)
+                ppo_trainer = NeuralNetTraining(actor_critic)
 
-                if loaded_weights is not None and loaded_biases is not None:
-                    neural_net.weights = loaded_weights
-                    neural_net.biases = loaded_biases
+                episodes_counter = NeuralNetUtilities.load_model(actor_critic, ppo_trainer.optimizer)
 
-                target_net = neural_net.copy()
+                #return
                 is_ai_running = True
 
-            if is_ai_running:
+            if not is_ai_running:
+                continue
 
-                # q_values from the neural net
-                values = neural_net.forward(data)[0]
+            if len(frame_stack) == 0:
+                for _ in range(NUM_FRAMES):
+                    frame_stack.append(data)
+            else:
+                frame_stack.append(data)
 
-                if random.random() < NeuralNetTraining.epsilon:
-                    next_actions = [i for i in range(len(values)) if random.random() > 0.5]
-                else:
-                    next_actions = [i for i, prob in enumerate(values) if prob > 0.5]
+            stacked_data = np.concatenate(frame_stack)
+            state_tensor = torch.FloatTensor(stacked_data).unsqueeze(0)
 
-                virtual_gamepad.update_gamepad(next_actions)
+            with torch.no_grad():
+                action, action_log_prob, state_value = actor_critic.act(state_tensor)
 
-                if is_ai_training:
-                    executed_actions = np.zeros(len(values))
-                    for action_idx in next_actions:
-                        executed_actions[action_idx] = 1
+            action_array = action.squeeze(0).cpu().numpy()
 
-                    if old_state is not None:
-                        reward, done = NeuralNetUtilities.calculate_reward(old_state, state)
-                        replay_buffer.push(old_data, executed_actions, reward, data, done)
-                        #NeuralNetTraining.update_epsilon()
+            active_actions = [i for i, val in enumerate(action_array) if val == 1]  # check which actions probs are greater than 50%
 
-                        total_reward += reward
+            virtual_gamepad.update_gamepad(active_actions)  # execute those actions
 
-                        if len(replay_buffer) >= BATCH_SIZE:
-                            b_states, b_actions, b_rewards, b_next_states, b_dones = replay_buffer.sample(BATCH_SIZE)
+            # if we are not on the first frame
+            if old_state is not None:
+                reward, done = NeuralNetUtilities.calculate_reward(old_state, state)  # calculate the reward of the current state based on the prev. one
+                total_reward += reward  # sum this reward value
 
-                            current_q_values = neural_net.forward(b_states)
-                            next_q_values = target_net.forward(b_next_states)
+                # save those values into a buffer
+                rollout_buffer.push(
+                    state=torch.FloatTensor(old_data),
+                    action=last_action,
+                    reward=reward,
+                    is_terminal=done,
+                    log_prob=last_log_prob,
+                    value=last_value
+                )
 
-                            target_q_values = current_q_values.copy()
+                # frame count for frame memory
+                frames_count += 1
 
-                            for i in range(BATCH_SIZE):
-                                active_actions = [idx for idx, prob in enumerate(b_actions[i]) if prob > 0.5]
+                if frames_count % UPDATE_TIMESTEP == 0:
+                    ppo_trainer.update(actor_critic, rollout_buffer)
 
-                                for action_idx in active_actions:
-                                    if b_dones[i]:
-                                        target_q_values[i][action_idx] = b_rewards[i]
-                                    else:
-                                        target_q_values[i][action_idx] = NeuralNetTraining.bellman(b_rewards[i], DISCOUNT_FACTOR, next_q_values[i])
+                if done:
+                    episodes_counter += 1
+                    print(f'Episode: {episodes_counter} | Reward: {total_reward}')
 
-                            neural_net.weights, neural_net.biases =  NeuralNetTraining.optimize(
-                                neural_net.weights,
-                                neural_net.biases,
-                                b_states,
-                                target_q_values)
+                    total_reward = 0
+                    old_state = None
+                    old_data = None
+                    frame_stack.clear()
 
-                        if done:
-                            NeuralNetTraining.update_epsilon()
-                            old_state = None
-                            old_data = None
-                            episodes_counter += 1
+                    #NeuralNetUtilities.save_model(actor_critic, ppo_trainer.optimizer, episodes_counter)
 
-                            NeuralNetUtilities.save_model(neural_net.weights, neural_net.biases,
-                                                          NeuralNetTraining.epsilon, episodes_counter)
+                    continue
 
-                            if episodes_counter % 100 == 0:
-                                replay_buffer.save_buffer()
+            old_state = state.copy()
+            old_data = stacked_data.copy()
 
-                            print('Epsilon: ', NeuralNetTraining.epsilon)
-                            print('Reward: ', total_reward)
-                            print('Episode: ', episodes_counter)
-                            print('Buffer size: ', len(replay_buffer.buffer))
+            last_action = action.squeeze(0).detach()
+            last_log_prob = action_log_prob.squeeze(0).detach()
+            last_value = state_value.squeeze(0).detach()
 
-                            total_reward = 0
-                            continue
-
-                    old_state = state.copy()
-                    old_data = data.copy()
-
-                    frames_count += 1
-
-                    if frames_count % TARGET_UPDATE == 0:
-                        target_net = neural_net.copy()
-
-                    if frames_count % SAVE_INTERVAL == 0:
-                        NeuralNetUtilities.save_model(neural_net.weights, neural_net.biases, NeuralNetTraining.epsilon, episodes_counter)
+            if frames_count > 0 and frames_count % SAVE_INTERVAL == 0:
+                NeuralNetUtilities.save_model(actor_critic, ppo_trainer.optimizer, episodes_counter)
 
     except KeyboardInterrupt:
-        if is_ai_running:
-            NeuralNetUtilities.save_model(neural_net.weights, neural_net.biases, NeuralNetTraining.epsilon, episodes_counter)
-            replay_buffer.save_buffer()
+        if is_ai_running and actor_critic is not None:
+            NeuralNetUtilities.save_model(actor_critic, ppo_trainer.optimizer, episodes_counter)
     finally:
         pipe.disconnect()
 

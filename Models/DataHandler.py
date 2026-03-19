@@ -1,5 +1,10 @@
 import numpy as np
 
+MAX_PLAYER_VELOCITY_X = 20
+MAX_PLAYER_VELOCITY_Y = 20.95
+MAX_BOSS_VELOCITY_X = 29.37
+MAX_BOSS_VELOCITY_Y = 41
+
 class DataHandler:
 
     @staticmethod
@@ -19,23 +24,32 @@ class DataHandler:
 
     @staticmethod
     def treat_data(data: dict) -> np.ndarray:
+        if not data:
+            return np.array([], dtype=float)
+
         result = []
 
-        if not data:
-            return np.array(result, dtype=float)
-
+        # relative position
         pos_player = np.array([data.get('px', 0.0), data.get('py', 0.0)])
         pos_boss = np.array([data.get('bx', 0.0), data.get('by', 0.0)])
 
-        delta = pos_boss - pos_player
+        pos_delta = pos_boss - pos_player
 
-        delta_norm = 1 / (np.abs(delta / 10) + 1)
+        pos_delta_norm = 1 / (np.abs(pos_delta / 10) + 1)
 
-        delta_norm = delta_norm * np.sign(delta)
+        pos_delta_norm = pos_delta_norm * np.sign(pos_delta)
 
-        result.append(float(delta_norm[0]))  # deltaX
-        result.append(float(delta_norm[1]))  # deltaY
+        result.append(float(pos_delta_norm[0]))  # deltaX
+        result.append(float(pos_delta_norm[1]))  # deltaY
 
+        # relative velocity
+        velocity_player = np.array([data.get('pvx', 0.0), data.get('pvy', 0.0)])
+        velocity_boss = np.array([data.get('bvx', 0.0), data.get('bvy', 0.0)])
+
+        velocity_delta = velocity_boss - velocity_player
+
+        result.append(float(velocity_delta[0]) / (MAX_BOSS_VELOCITY_X + MAX_PLAYER_VELOCITY_X)) # velocity deltaX
+        result.append(float(velocity_delta[1]) / (MAX_BOSS_VELOCITY_Y + MAX_PLAYER_VELOCITY_Y)) # velocity deltaY
 
         for key, value in data.items():
 
@@ -60,10 +74,22 @@ class DataHandler:
                     result.append(-1.0) # null flag (-1)
                     continue
                 else:
-                    if key in ['maxHp', 'maxSoul', 'maxBossHp', 'maxBossStateAmount', 'bx', 'by', 'bossScene']:
+                    if key in ['maxHp', 'maxSoul', 'bossMaxHp', 'bossStateAmount', 'px', 'py', 'bx', 'by', 'bossScene', 'bvx', 'bvy', 'bossScene', 'bossState']:
                         continue
 
                     match key:
+                        case 'pvx':
+                            result.append(float(value / MAX_PLAYER_VELOCITY_X))
+                            continue
+                        case 'pvy':
+                            result.append(float(value / MAX_PLAYER_VELOCITY_Y))
+                            continue
+                        #case 'bvx':
+                            #result.append(float(value / MAX_BOSS_VELOCITY_X))
+                            #continue
+                        #case 'bvy':
+                            #result.append(float(value / MAX_BOSS_VELOCITY_Y))
+                            #continue
                         case 'hp':
                             max_hp = data.get('maxHp', 1)
                             result.append(float(value / max_hp) if max_hp > 0 else 0.0)
@@ -73,7 +99,7 @@ class DataHandler:
                             result.append(float(value / max_soul) if max_soul > 0 else 0.0)
                             continue
                         case 'bossHp':
-                            max_boss_hp = data.get('maxBossHp', 1)
+                            max_boss_hp = data.get('bossMaxHp', 1)
                             result.append(float(value / max_boss_hp) if max_boss_hp > 0 else 0.0)
                             continue
                     result.append(float(value))

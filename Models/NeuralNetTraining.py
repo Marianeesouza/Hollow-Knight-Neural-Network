@@ -1,99 +1,72 @@
-import numpy as np
+import torch
+import torch.nn as nn
 
-from Models.NeuralNetUtilities import NeuralNetUtilities
+from Models.RolloutBuffer import RolloutBuffer
+
 
 class NeuralNetTraining:
+    def __init__(self, actor_critic, lr=0.0003, gamma=0.99, k_epochs=4, eps_clip=0.2):
+        self.gamma = gamma
+        self.eps_clip = eps_clip
+        self.k_epochs = k_epochs
 
-    e_start = 1
-    e_min = 0.01
-    epsilon = 1
-    decay_linear = 0.001
-    learning_rate = 0.00025
+        self.optimizer = torch.optim.Adam(actor_critic.parameters(), lr=lr)
+        self.mse_loss = nn.MSELoss()
 
-    @classmethod
-    def optimize(cls, weights: list, biases: list, state: np.ndarray, target_q_values: np.ndarray):
+    def update(self, actor_critic, buffer: RolloutBuffer):
+        rewards = []
+        discounted_reward = 0
+        for reward, is_terminal in zip(reversed(buffer.rewards), reversed(buffer.is_terminals)):
+            if is_terminal:
+                discounted_reward = 0
+            discounted_reward = reward + (self.gamma * discounted_reward)
+            rewards.insert(0, discounted_reward)
 
-        if state.ndim == 1:
-            state = state.reshape(1, -1)
+        rewards = torch.tensor(rewards, dtype=torch.float32)
 
-        if target_q_values.ndim == 1:
-            target_q_values = target_q_values.reshape(1, -1)
+        old_states = torch.squeeze(torch.stack(buffer.states, dim=0)).detach()
+        old_actions = torch.squeeze(torch.stack(buffer.actions, dim=0)).detach()
+        old_log_probs = torch.squeeze(torch.stack(buffer.log_probs, dim=0)).detach()
+        old_values = torch.squeeze(torch.stack(buffer.values, dim=0)).detach()
 
-        activations = [state]
-        z_values = []
+        advantages = (rewards - old_values).detach()
 
-        for i in range(len(weights)):
-            z = np.dot(activations[-1], weights[i]) + biases[i]
-            z_values.append(z)
+        advantages = (advantages - advantages.mean()) / (advantages.std() + 1e-7)
 
-            if i < len(weights) - 1:
-                activation = NeuralNetUtilities.relu(z)
-            else:
-                activation = NeuralNetUtilities.sigmoid(z)
+        rewards = (rewards - rewards.mean()) / (rewards.std() + 1e-7)
 
-            activations.append(activation)
+        batch_size = old_states.size(0)
+        mini_batch_size = 64
 
-        current_q_values = activations[-1]
+        for _ in range(self.k_epochs):
 
-        nabla_w = [np.zeros(w.shape) for w in weights]
-        nabla_b = [np.zeros(b.shape) for b in biases]
+            indices = torch.randperm(batch_size)
 
-        error = current_q_values - target_q_values
-        delta = error * NeuralNetUtilities.sigmoid_derivative(z_values[-1])
+            for start in range(0, batch_size, mini_batch_size):
+                end = start + mini_batch_size
+                batch_idx = indices[start:end]
 
-        nabla_w[-1] = np.dot(activations[-2].T, delta)
-        nabla_b[-1] = np.sum(delta, axis = 0, keepdims = True)
+                batch_states = old_states[batch_idx]
+                batch_actions = old_actions[batch_idx]
+                batch_log_probs = old_log_probs[batch_idx]
+                batch_advantages = advantages[batch_idx]
+                batch_rewards = rewards[batch_idx]
 
-        for l in range(2, len(weights) + 1):
-            z = z_values[-l]
-            derivative = NeuralNetUtilities.relu_derivative(z)
+                log_probs, state_values, dist_entropy = actor_critic.evaluate(batch_states, batch_actions)
 
-            delta = np.dot(delta, weights[-l+1].T) * derivative
+                state_values = state_values.view(-1)
+                dist_entropy = dist_entropy.mean(dim=-1)
 
-            nabla_w[-l] = np.dot(activations[-l-1].T, delta)
-            nabla_b[-l] = np.sum(delta, axis = 0, keepdims = True)
+                ratios = torch.exp(log_probs - batch_log_probs)
 
-        batch_size = state.shape[0]
+                surr1 = ratios * batch_advantages
+                surr2 = torch.clamp(ratios, 1 - self.eps_clip, 1 + self.eps_clip) * batch_advantages
 
-        new_weights = [w - ((cls.learning_rate / batch_size) * nw) for w, nw in zip(weights, nabla_w)]
-        new_biases = [b - ((cls.learning_rate / batch_size) * nb) for b, nb in zip(biases, nabla_b)]
+                loss = -torch.min(surr1, surr2) + 0.5 * self.mse_loss(state_values.view(-1), batch_rewards) - 0.01 * dist_entropy
+                loss = loss.mean()
 
-        return new_weights, new_biases
+                self.optimizer.zero_grad()
+                loss.backward()
+                self.optimizer.step()
 
-    # Learning equations
-    @staticmethod
-    def bellman(reward: float, discount_factor: float, next_q_values: list):
-        return reward + discount_factor * np.max(next_q_values)
-
-    @classmethod
-    def gradient_descent_weight(cls, weights: np.ndarray, inputs: np.ndarray, n: int,
-                         target_q_values: np.ndarray, current_q_values: np.ndarray, z_output: np.ndarray) -> np.ndarray:
-
-        error = current_q_values - target_q_values
-        activation_derivative = NeuralNetUtilities.sigmoid_derivative(z_output)
-
-        delta = error * activation_derivative
-
-        if inputs.ndim == 1: inputs = inputs.reshape(1, -1)
-        if delta.ndim == 1: delta = delta.reshape(1, -1)
-
-        gradient = (2 / n) * np.dot(inputs.T, delta)
-
-        return weights - (cls.learning_rate * gradient)
-
-    @classmethod
-    def gradient_descent_bias(cls, biases: np.ndarray, n: int,
-                         target_q_values: np.ndarray, current_q_values: np.ndarray, z_output: np.ndarray) -> np.ndarray:
-
-        error = current_q_values - target_q_values
-        activation_derivative = NeuralNetUtilities.sigmoid_derivative(z_output)
-
-        delta = error * activation_derivative
-        gradient = (2 / n) * np.sum(delta, axis=0)
-
-        return biases - (cls.learning_rate * gradient)
-
-    @classmethod
-    def update_epsilon(cls):
-        cls.epsilon = max(cls.e_min, (cls.epsilon - cls.decay_linear))
-        return cls.epsilon
+        buffer.clear()

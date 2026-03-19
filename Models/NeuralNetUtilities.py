@@ -1,51 +1,37 @@
 import numpy as np
+import torch
+import os
 
 class NeuralNetUtilities:
 
-    # Activation Functions
     @staticmethod
-    def relu(z):
-        return np.maximum(0, z)
-
-    @staticmethod
-    def relu_derivative(z):
-        return np.where(z > 0, 1, 0)
-
-    @staticmethod
-    def sigmoid(z):
-        z = np.clip(z, -500, 500)
-        return 1 / (1 + np.exp(-z))
-
-    @staticmethod
-    def sigmoid_derivative(z):
-        sig = NeuralNetUtilities.sigmoid(z)
-        return sig * (1 - sig)
-
-    @staticmethod
-    def save_model(weights: list, biases: list, epsilon: float, episodes: int, file_name: str = 'HK_Model.npz'):
-
-        w_arr = np.empty(len(weights), dtype=object)
-        w_arr[:] = weights
-
-        b_arr = np.empty(len(biases), dtype=object)
-        b_arr[:] = biases
-
-        np.savez(file_name, weights=w_arr, biases=b_arr, epsilon=epsilon, episodes=episodes)
+    def save_model(actor_critic, optimizer, episodes: int, file_name: str = 'HK_Model.pth'):
+        checkpoint = {
+            'model_state_dict': actor_critic.state_dict(),
+            'optimizer_state_dict': optimizer.state_dict(),
+            'episodes': episodes
+        }
+        torch.save(checkpoint, file_name)
         print("💾 Model saved")
 
     @staticmethod
-    def load_model(file_name: str = 'HK_Model.npz'):
-        try:
-            data = np.load(file_name, allow_pickle=True)
+    def load_model(actor_critic, optimizer, file_name: str = 'HK_Model.pth'):
+        if os.path.exists(file_name):
+            checkpoint = torch.load(file_name)
+            actor_critic.load_state_dict(checkpoint['model_state_dict'])
+            optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
+            episodes = checkpoint.get('episodes', 0)
             print("💾 Model loaded")
-            return data['weights'].tolist(), data['biases'].tolist(), data['epsilon'].item(), data['episodes'].item()
-
-        except FileNotFoundError:
+            return episodes
+        else:
             print("⚠️ File not found. Neural Network restarting learning")
-            return None, None, 1, 0
+            return 0
+
+    @staticmethod
+    def calculate_ratio(old_state, current_state, epsilon, advantage):
+        return np.minimum(((current_state / old_state) * advantage), np.clip(current_state / old_state, 1 - epsilon, 1 + epsilon) * advantage)
 
 
-    # Reward
     @staticmethod
     def calculate_reward(old_state: dict, state: dict):
         reward = 0
@@ -80,7 +66,6 @@ class NeuralNetUtilities:
             return float(1), True
 
         # encouraging the player to be aggressive
-
         current_delta_x = state['bx'] - state['px']
         current_delta_y = state['by'] - state['py']
 
@@ -90,8 +75,4 @@ class NeuralNetUtilities:
         # if the player don't act. Bleeding effect
         reward -= 0.003
 
-        scaled_reward = reward / 100
-
-        scaled_reward = np.clip(scaled_reward, -1, 1)
-
-        return float(scaled_reward), False
+        return float(reward), False

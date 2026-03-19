@@ -14,9 +14,6 @@ using UnityEngine;
 public class DataExtractorMod : BaseUnityPlugin
 {
     PlayerState playerState;
-    private GameObject currentBoss;
-
-    private string latestJsonString = "{}";
 
     private readonly object stateLock = new object();
 
@@ -27,6 +24,8 @@ public class DataExtractorMod : BaseUnityPlugin
     private bool isRunning = false;
 
     public static DataExtractorMod Instance;
+
+    private AutoResetEvent frameReadyEvent = new AutoResetEvent(false);
 
     private void Awake()
     {
@@ -41,13 +40,13 @@ public class DataExtractorMod : BaseUnityPlugin
         playerState = new PlayerState();
 
         isRunning = true;
-        pipeThread = new Thread(PipeThreadLoop); 
+        pipeThread = new Thread(PipeThreadLoop);
 
         pipeThread.IsBackground = true; // background process
-        pipeThread.Start(); // initiating thread process here
+        pipeThread.Start(); // initiating thread process here     
     }
 
-    private void Update()
+    private void FixedUpdate()
     {
         isPlayerInScene = (GameManager.instance != null && GameManager.instance.IsGameplayScene());
 
@@ -59,6 +58,8 @@ public class DataExtractorMod : BaseUnityPlugin
         {
             ExtractPlayerData();
         }
+
+        frameReadyEvent.Set();
     }
 
     public void StartDeathReload(HeroController hero)
@@ -115,19 +116,20 @@ public class DataExtractorMod : BaseUnityPlugin
 
                                     // Position flags
                                     writer.Write(playerState.px); // player x pos
-                                    writer.Write(playerState.py); // player y pos                              
+                                    writer.Write(playerState.py); // player y pos
+                                    writer.Write(playerState.pvx); // player x velocity
+                                    writer.Write(playerState.pvy); // player y velocity
 
                                     // Resources flags
                                     writer.Write(playerState.hp);
                                     writer.Write(playerState.maxHp);
-                                    
+
                                     writer.Write(playerState.soul);
                                     writer.Write(playerState.maxSoul);
                                     //writer.Write(playerState.dead);
 
                                     // Facing flags
                                     writer.Write(playerState.facingRight);
-                                    writer.Write(playerState.facingLeft);
 
                                     // Movement flags
                                     writer.Write(playerState.onGround);
@@ -135,7 +137,7 @@ public class DataExtractorMod : BaseUnityPlugin
                                     writer.Write(playerState.wallJumping);
                                     writer.Write(playerState.jumping);
                                     writer.Write(playerState.doubleJumping);
-                                    
+
                                     writer.Write(playerState.dashing);
                                     writer.Write(playerState.dashCooldown);
 
@@ -163,6 +165,8 @@ public class DataExtractorMod : BaseUnityPlugin
                                     // Positions flags
                                     writer.Write(playerState.bx);
                                     writer.Write(playerState.by);
+                                    writer.Write(playerState.bvx);
+                                    writer.Write(playerState.bvy);
 
                                     // Resources flags
                                     writer.Write(playerState.bossHp);
@@ -177,11 +181,12 @@ public class DataExtractorMod : BaseUnityPlugin
                                     writer.Write(playerState.bossStateAmount);
                                     writer.Write(playerState.bossSceneHash);
                                 }
-                              
+
                                 writer.Flush();
                             }
-                            
-                            Thread.Sleep(16);
+
+                            //Thread.Sleep(16);
+                            frameReadyEvent.WaitOne();
                         }
                     }
                 }
@@ -198,7 +203,8 @@ public class DataExtractorMod : BaseUnityPlugin
         // Position 
         playerState.px = HeroController.instance.transform.position.x;
         playerState.py = HeroController.instance.transform.position.y;
-        
+        playerState.pvx = HeroController.instance.current_velocity.x;
+        playerState.pvy = HeroController.instance.current_velocity.y;
 
         // Resources
         playerState.hp = PlayerData.instance.health;
@@ -209,7 +215,6 @@ public class DataExtractorMod : BaseUnityPlugin
 
         // Facing flags
         playerState.facingRight = HeroController.instance.cState.facingRight;
-        playerState.facingLeft = !playerState.facingRight;
 
         // Machine States
         playerState.onGround = HeroController.instance.cState.onGround;
@@ -221,7 +226,7 @@ public class DataExtractorMod : BaseUnityPlugin
 
         playerState.dashing = HeroController.instance.cState.dashing;
         playerState.dashCooldown = HeroController.instance.DASH_COOLDOWN;
-        
+
         playerState.shadowDashing = HeroController.instance.cState.shadowDashing;
         playerState.shadowDashCoolDown = HeroController.instance.SHADOW_DASH_COOLDOWN;
 
@@ -242,10 +247,10 @@ public class DataExtractorMod : BaseUnityPlugin
         {
             playerState.attackForward = HeroController.instance.cState.attacking;
         }
-        
+
         playerState.attackUp = HeroController.instance.cState.upAttacking;
         playerState.attackDown = HeroController.instance.cState.downAttacking;
-            
+
 
         playerState.canCast = HeroController.instance.CanCast();
         playerState.casting = HeroController.instance.cState.casting;
@@ -268,7 +273,8 @@ public class DataExtractorMod : BaseUnityPlugin
                 if (boss != null)
                 {
                     PlayMakerFSM[] fsms = boss.gameObject.GetComponents<PlayMakerFSM>();
-                   
+                    var bossRb = boss.GetComponent<Rigidbody2D>();
+
                     foreach (PlayMakerFSM fsm in fsms)
                     {
                         if (fsm.FsmName == "Control")
@@ -287,9 +293,14 @@ public class DataExtractorMod : BaseUnityPlugin
                                 }
                             }
 
+                            Time.timeScale = 3f;
+
                             // Position flags
                             playerState.bx = boss.transform.position.x;
                             playerState.by = boss.transform.position.y;
+
+                            playerState.bvx = bossRb ? bossRb.linearVelocityX : 0;
+                            playerState.bvy = bossRb ? bossRb.linearVelocityY : 0;
 
                             // Resource flags
                             playerState.bossHp = boss.hp;
@@ -313,6 +324,7 @@ public class DataExtractorMod : BaseUnityPlugin
     {
         // Clean up the port when the game closes or mod is disabled
         isRunning = false;
+        frameReadyEvent.Set();
     }
 }
 

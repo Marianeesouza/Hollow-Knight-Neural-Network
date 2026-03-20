@@ -1,5 +1,6 @@
 import torch
 import numpy as np
+import statistics
 
 from Models import ClientPipe
 from Models.DataHandler import DataHandler
@@ -29,6 +30,7 @@ def main():
     virtual_gamepad = VirtualGamePad()
 
     frame_stack = deque(maxlen=NUM_FRAMES)
+    reward_stack = deque(maxlen=100)
 
     is_ai_running = False
 
@@ -47,7 +49,7 @@ def main():
             if state is None:
                 print("⚠️ Connection lost.")
                 if is_ai_running and actor_critic is not None:
-                    NeuralNetUtilities.save_model(actor_critic, ppo_trainer.optimizer, episodes_counter)
+                    NeuralNetUtilities.save_model(actor_critic, ppo_trainer.optimizer, episodes_counter, reward_stack)
                 break
 
             boss_scene = state['bossScene']
@@ -63,7 +65,7 @@ def main():
                 actor_critic = ActorCritic(input_dim, output_dim)
                 ppo_trainer = NeuralNetTraining(actor_critic)
 
-                episodes_counter = NeuralNetUtilities.load_model(actor_critic, ppo_trainer.optimizer)
+                episodes_counter, reward_stack = NeuralNetUtilities.load_model(actor_critic, ppo_trainer.optimizer)
 
                 #return
                 is_ai_running = True
@@ -114,6 +116,8 @@ def main():
                     episodes_counter += 1
                     print(f'Episode: {episodes_counter} | Reward: {total_reward}')
 
+                    reward_stack.append(total_reward)
+
                     total_reward = 0
                     old_state = None
                     old_data = None
@@ -131,11 +135,14 @@ def main():
             last_value = state_value.squeeze(0).detach()
 
             if frames_count > 0 and frames_count % SAVE_INTERVAL == 0:
-                NeuralNetUtilities.save_model(actor_critic, ppo_trainer.optimizer, episodes_counter)
+                NeuralNetUtilities.save_model(actor_critic, ppo_trainer.optimizer, episodes_counter, reward_stack)
+
+            if episodes_counter % 100 == 0 and len(reward_stack) > 0:
+                print('Mean Reward: ', statistics.mean(reward_stack))
 
     except KeyboardInterrupt:
         if is_ai_running and actor_critic is not None:
-            NeuralNetUtilities.save_model(actor_critic, ppo_trainer.optimizer, episodes_counter)
+            NeuralNetUtilities.save_model(actor_critic, ppo_trainer.optimizer, episodes_counter, reward_stack)
     finally:
         pipe.disconnect()
 

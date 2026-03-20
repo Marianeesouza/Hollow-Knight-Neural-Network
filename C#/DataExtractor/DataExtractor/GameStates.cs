@@ -5,19 +5,19 @@ public class PlayerState
 {
     // Position flags
     public float px, py;
-    
+    public float pvx, pvy;
+
     // Resources flags
     public int hp;
     public int maxHp;
-    
+
     public int soul;
     public int maxSoul;
-    
+
     //public bool dead;
 
     // Facing flags
     public bool facingRight;
-    public bool facingLeft;
 
     // Movement flags
     public bool onGround;
@@ -25,10 +25,10 @@ public class PlayerState
     public bool wallJumping;
     public bool jumping;
     public bool doubleJumping;
-    
+
     public bool dashing;
     public float dashCooldown;
-    
+
     public bool shadowDashing;
     public float shadowDashCoolDown;
 
@@ -52,9 +52,7 @@ public class PlayerState
 
     // Position flags
     public float bx, by;
-
-    // Current boss flag
-    //public int bossSceneHash;
+    public float bvx, bvy;
 
     // Boss Resources flags
     public int bossHp;

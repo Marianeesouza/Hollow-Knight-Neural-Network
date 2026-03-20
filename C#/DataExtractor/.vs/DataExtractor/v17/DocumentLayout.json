@@ -1,14 +1,14 @@
 {
   "Version": 1,
-  "WorkspaceRootPath": "C:\\Users\\vchri\\source\\repos\\DataExtractor\\",
+  "WorkspaceRootPath": "D:\\Documentos\\Pasta Projetos\\Hollow-Knight-Neural-Network\\C#\\DataExtractor\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{E6C2BC23-CDC0-48D5-AC2D-52CBAF1F1745}|DataExtractor\\DataExtractor.csproj|c:\\users\\vchri\\source\\repos\\dataextractor\\dataextractor\\dataextractormod.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{E6C2BC23-CDC0-48D5-AC2D-52CBAF1F1745}|DataExtractor\\DataExtractor.csproj|d:\\documentos\\pasta projetos\\hollow-knight-neural-network\\c#\\dataextractor\\dataextractor\\dataextractormod.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{E6C2BC23-CDC0-48D5-AC2D-52CBAF1F1745}|DataExtractor\\DataExtractor.csproj|solutionrelative:dataextractor\\dataextractormod.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{E6C2BC23-CDC0-48D5-AC2D-52CBAF1F1745}|DataExtractor\\DataExtractor.csproj|C:\\Users\\vchri\\source\\repos\\DataExtractor\\dataextractor\\gamestates.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{E6C2BC23-CDC0-48D5-AC2D-52CBAF1F1745}|DataExtractor\\DataExtractor.csproj|solutionrelative:dataextractor\\gamestates.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{E6C2BC23-CDC0-48D5-AC2D-52CBAF1F1745}|DataExtractor\\DataExtractor.csproj|D:\\Documentos\\Pasta Projetos\\Hollow-Knight-Neural-Network\\C#\\DataExtractor\\DataExtractor\\GameStates.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{E6C2BC23-CDC0-48D5-AC2D-52CBAF1F1745}|DataExtractor\\DataExtractor.csproj|solutionrelative:DataExtractor\\GameStates.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
   "DocumentGroupContainers": [
@@ -28,11 +28,11 @@
               "$type": "Document",
               "DocumentIndex": 0,
               "Title": "DataExtractorMod.cs",
-              "DocumentMoniker": "C:\\Users\\vchri\\source\\repos\\DataExtractor\\DataExtractor\\DataExtractorMod.cs",
+              "DocumentMoniker": "D:\\Documentos\\Pasta Projetos\\Hollow-Knight-Neural-Network\\C#\\DataExtractor\\DataExtractor\\DataExtractorMod.cs",
               "RelativeDocumentMoniker": "DataExtractor\\DataExtractorMod.cs",
-              "ToolTip": "C:\\Users\\vchri\\source\\repos\\DataExtractor\\DataExtractor\\DataExtractorMod.cs",
+              "ToolTip": "D:\\Documentos\\Pasta Projetos\\Hollow-Knight-Neural-Network\\C#\\DataExtractor\\DataExtractor\\DataExtractorMod.cs",
               "RelativeToolTip": "DataExtractor\\DataExtractorMod.cs",
-              "ViewState": "AgIAADwAAAAAAAAAAAAAAE4AAABBAAAAAAAAAA==",
+              "ViewState": "AgIAAAoBAAAAAAAAAAAQwBQBAAAhAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2026-02-18T18:05:11.006Z",
               "EditorCaption": ""
@@ -41,11 +41,11 @@
               "$type": "Document",
               "DocumentIndex": 1,
               "Title": "GameStates.cs",
-              "DocumentMoniker": "C:\\Users\\vchri\\source\\repos\\DataExtractor\\DataExtractor\\GameStates.cs",
+              "DocumentMoniker": "D:\\Documentos\\Pasta Projetos\\Hollow-Knight-Neural-Network\\C#\\DataExtractor\\DataExtractor\\GameStates.cs",
               "RelativeDocumentMoniker": "DataExtractor\\GameStates.cs",
-              "ToolTip": "C:\\Users\\vchri\\source\\repos\\DataExtractor\\DataExtractor\\GameStates.cs",
+              "ToolTip": "D:\\Documentos\\Pasta Projetos\\Hollow-Knight-Neural-Network\\C#\\DataExtractor\\DataExtractor\\GameStates.cs",
               "RelativeToolTip": "DataExtractor\\GameStates.cs",
-              "ViewState": "AgIAACoAAAAAAAAAAAAUwEIAAAAAAAAAAAAAAA==",
+              "ViewState": "AgIAACgAAAAAAAAAAAAUwDsAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2026-02-18T18:08:55.006Z",
               "EditorCaption": ""

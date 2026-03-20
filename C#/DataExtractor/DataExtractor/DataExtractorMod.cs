@@ -10,6 +10,7 @@ using System.Text;
 using System.Threading;
 using UnityEngine;
 
+
 [BepInPlugin("com.victorchristofoletti.dataextractor", "Hollow Knight Data Extractor", "1.0.0")]
 public class DataExtractorMod : BaseUnityPlugin
 {
@@ -43,7 +44,10 @@ public class DataExtractorMod : BaseUnityPlugin
         pipeThread = new Thread(PipeThreadLoop);
 
         pipeThread.IsBackground = true; // background process
-        pipeThread.Start(); // initiating thread process here     
+        pipeThread.Start(); // initiating thread process here
+                            // 
+
+        Time.timeScale = 3f;
     }
 
     private void FixedUpdate()

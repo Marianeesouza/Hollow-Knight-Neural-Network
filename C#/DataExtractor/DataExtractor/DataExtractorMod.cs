@@ -66,12 +66,12 @@ public class DataExtractorMod : BaseUnityPlugin
         frameReadyEvent.Set();
     }
 
-    public void StartDeathReload(HeroController hero)
+    public void StartDeathReload()
     {
-        StartCoroutine(WaitAndReloadRoutine(hero));
+        StartCoroutine(WaitAndReloadRoutine());
     }
 
-    private IEnumerator WaitAndReloadRoutine(HeroController hero)
+    private IEnumerator WaitAndReloadRoutine()
     {
         yield return new WaitForSeconds(0.1f);
 
@@ -336,10 +336,21 @@ public class DataExtractorMod : BaseUnityPlugin
 public class HeroControllerDiePatch
 {
     [HarmonyPrefix]
-    public static bool Prefix(HeroController __instance)
+    public static bool Prefix()
     {
-        DataExtractorMod.Instance?.StartDeathReload(__instance);
+        DataExtractorMod.Instance?.StartDeathReload();
 
+        return false;
+    }
+}
+
+[HarmonyPatch(typeof(HealthManager), "Die")]
+public class HealthManagerDiePatch
+{
+    [HarmonyPrefix]
+    public static bool Prefix()
+    {
+        DataExtractorMod.Instance?.StartDeathReload();
         return false;
     }
 }

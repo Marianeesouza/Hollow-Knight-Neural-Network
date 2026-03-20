@@ -5,6 +5,7 @@ import statistics
 from Models import ClientPipe
 from Models.DataHandler import DataHandler
 from Models.ActorCritic import ActorCritic
+from Models.FileUtilities import FileUtilities
 from Models.NeuralNetTraining import NeuralNetTraining
 from Models.NeuralNetUtilities import NeuralNetUtilities
 from Models.RolloutBuffer import RolloutBuffer
@@ -15,6 +16,8 @@ SAVE_INTERVAL = 90000
 UPDATE_TIMESTEP = 2048
 BOSS_SCENE_HASH = 423158243 # Hornet
 NUM_FRAMES = 4
+
+FILE_NAME = 'stats.pkl'
 
 def main():
     pipe = ClientPipe.Pipe()
@@ -31,6 +34,9 @@ def main():
 
     frame_stack = deque(maxlen=NUM_FRAMES)
     reward_stack = deque(maxlen=100)
+
+    episode_stats = []
+    mean_stats = []
 
     is_ai_running = False
 
@@ -49,7 +55,8 @@ def main():
             if state is None:
                 print("⚠️ Connection lost.")
                 if is_ai_running and actor_critic is not None:
-                    NeuralNetUtilities.save_model(actor_critic, ppo_trainer.optimizer, episodes_counter, reward_stack)
+                    NeuralNetUtilities.save_model(actor_critic, ppo_trainer.optimizer)
+                    FileUtilities.save_file(FILE_NAME, episodes_counter, reward_stack, episode_stats, mean_stats)
                 break
 
             boss_scene = state['bossScene']
@@ -65,7 +72,8 @@ def main():
                 actor_critic = ActorCritic(input_dim, output_dim)
                 ppo_trainer = NeuralNetTraining(actor_critic)
 
-                episodes_counter, reward_stack = NeuralNetUtilities.load_model(actor_critic, ppo_trainer.optimizer)
+                NeuralNetUtilities.load_model(actor_critic, ppo_trainer.optimizer)
+                episodes_counter, reward_stack, episode_stats, mean_stats = FileUtilities.load_file(FILE_NAME)
 
                 #return
                 is_ai_running = True
@@ -114,16 +122,19 @@ def main():
 
                 if done:
                     episodes_counter += 1
-                    print(f'Episode: {episodes_counter} | Reward: {total_reward}')
+                    #print(f'Episode: {episodes_counter} | Reward: {total_reward}')
 
                     reward_stack.append(total_reward)
+
+                    if episodes_counter % 10 == 0 and len(reward_stack) > 0:
+                        episode_stats.append(episodes_counter)
+                        mean_stats.append(statistics.mean(reward_stack))
+                        print(f'Episode: {episodes_counter} | Mean Reward: {statistics.mean(reward_stack)}')
 
                     total_reward = 0
                     old_state = None
                     old_data = None
                     frame_stack.clear()
-
-                    #NeuralNetUtilities.save_model(actor_critic, ppo_trainer.optimizer, episodes_counter)
 
                     continue
 
@@ -135,14 +146,13 @@ def main():
             last_value = state_value.squeeze(0).detach()
 
             if frames_count > 0 and frames_count % SAVE_INTERVAL == 0:
-                NeuralNetUtilities.save_model(actor_critic, ppo_trainer.optimizer, episodes_counter, reward_stack)
-
-            if episodes_counter % 100 == 0 and len(reward_stack) > 0:
-                print('Mean Reward: ', statistics.mean(reward_stack))
+                NeuralNetUtilities.save_model(actor_critic, ppo_trainer.optimizer)
+                FileUtilities.save_file(FILE_NAME, episodes_counter, reward_stack, episode_stats, mean_stats)
 
     except KeyboardInterrupt:
         if is_ai_running and actor_critic is not None:
-            NeuralNetUtilities.save_model(actor_critic, ppo_trainer.optimizer, episodes_counter, reward_stack)
+            NeuralNetUtilities.save_model(actor_critic, ppo_trainer.optimizer)
+            FileUtilities.save_file(FILE_NAME, episodes_counter, reward_stack, episode_stats, mean_stats)
     finally:
         pipe.disconnect()
 

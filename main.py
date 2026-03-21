@@ -13,7 +13,7 @@ from Models.VirtualGamePad import VirtualGamePad
 from collections import deque
 
 SAVE_INTERVAL = 90000
-UPDATE_TIMESTEP = 2048
+UPDATE_TIMESTEP = 4096
 BOSS_SCENE_HASH = 423158243 # Hornet
 NUM_FRAMES = 4
 
@@ -46,9 +46,10 @@ def main():
     last_log_prob = None
     last_value = None
 
+    next_value = None
+
     try:
         while True:
-
             #retrieving the data from the pipe (Hollow Knight raw data)
             state = pipe.read_state()
 
@@ -118,7 +119,16 @@ def main():
                 frames_count += 1
 
                 if frames_count % UPDATE_TIMESTEP == 0:
-                    ppo_trainer.update(actor_critic, rollout_buffer)
+
+                    if done:
+                        next_value = torch.tensor(0.0, dtype=torch.float)
+                    else:
+                        with torch.no_grad():
+                            next_value = actor_critic.get_value(state_tensor)
+
+                    next_value = next_value.squeeze()
+
+                    ppo_trainer.update(actor_critic, rollout_buffer, next_value)
 
                 if done:
                     episodes_counter += 1

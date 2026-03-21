@@ -59,3 +59,7 @@ class ActorCritic(nn.Module):
         state_values = self.critic(x)
 
         return action_log_prob, state_values, dist_entropy
+
+    def get_value(self, state):
+        x = self.shared(state)
+        return self.critic(x)

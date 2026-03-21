@@ -61,6 +61,7 @@ class NeuralNetUtilities:
 
         # Boss death.
         if old_state['bossHp'] > 0 and state['bossHp'] <= 0:
+            print('Boss Death!')
             return float(1), True
 
         # encouraging the player to be aggressive

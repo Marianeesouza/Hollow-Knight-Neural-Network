@@ -4,6 +4,9 @@ import numpy as np
 import torch
 import os
 
+from Models.DataHandler import DataHandler
+
+
 class NeuralNetUtilities:
 
     @staticmethod
@@ -65,13 +68,19 @@ class NeuralNetUtilities:
             return float(1), True
 
         # encouraging the player to be aggressive
-        current_delta_x = state['bx'] - state['px']
-        current_delta_y = state['by'] - state['py']
+        prev_dx = old_state['bx'] - old_state['px']
+        prev_dy = old_state['by'] - old_state['py']
 
-        if abs(current_delta_x) < 10 and abs(current_delta_y) < 5 and player_damage == 0:
-            reward += 0.001 #
+        prev_distance = np.sqrt(prev_dx ** 2 + prev_dy ** 2)
 
-        # if the player don't act. Bleeding effect
-        reward -= 0.003
+        dx = state['bx'] - state['px']
+        dy = state['by'] - state['py']
+
+        distance = np.sqrt(dx**2 + dy**2)
+        max_distance = np.sqrt(22.47**2 + 11.59**2)
+
+        #distance_norm = np.clip(distance / max_distance, 0, 1)
+
+        reward += (prev_distance - distance) * 0.003
 
         return float(reward), False

@@ -1,9 +1,14 @@
 import numpy as np
 
+MAX_POSITION_X = 37.74
+MIN_POSITION_X = 15.27
+MAX_POSITION_Y = 40
+MIN_POSITION_Y = 28.41
 MAX_PLAYER_VELOCITY_X = 20
 MAX_PLAYER_VELOCITY_Y = 20.95
 MAX_BOSS_VELOCITY_X = 29.37
 MAX_BOSS_VELOCITY_Y = 41
+
 
 class DataHandler:
 
@@ -35,9 +40,15 @@ class DataHandler:
 
         pos_delta = pos_boss - pos_player
 
-        pos_delta_norm = 1 / (np.abs(pos_delta / 10) + 1)
+        range_x = MAX_POSITION_X - MIN_POSITION_X
+        range_y = MAX_POSITION_Y - MIN_POSITION_Y
 
-        pos_delta_norm = pos_delta_norm * np.sign(pos_delta)
+        pos_delta_norm = pos_delta / np.array([range_x, range_y])
+        pos_delta_norm = np.clip(pos_delta_norm, -1, 1)
+
+        #pos_delta_norm = 1 / (np.abs(pos_delta / 10) + 1)
+
+        #pos_delta_norm = pos_delta_norm * np.sign(pos_delta)
 
         result.append(float(pos_delta_norm[0]))  # deltaX
         result.append(float(pos_delta_norm[1]))  # deltaY

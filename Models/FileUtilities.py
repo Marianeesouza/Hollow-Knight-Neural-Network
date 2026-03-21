@@ -1,4 +1,5 @@
 import pickle
+from collections import deque
 
 class FileUtilities:
 
@@ -10,6 +11,10 @@ class FileUtilities:
 
     @staticmethod
     def load_file(file_name):
-        with open(file_name, "rb") as file:
-            print("💾 Stats loaded")
-            return pickle.load(file)
+        try:
+            with open(file_name, "rb") as file:
+                print("💾 Stats loaded")
+                return pickle.load(file)
+        except FileNotFoundError:
+            print("⚠️ File not found. Creating new file")
+            return 0, deque(maxlen=100), [], []

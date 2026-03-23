@@ -29,6 +29,10 @@ def main():
 
     actor_critic = None
     ppo_trainer = None
+
+    #best_actor_critic = None
+    #best_ppo_trainer = None
+
     rollout_buffer = RolloutBuffer()
     virtual_gamepad = VirtualGamePad()
 
@@ -37,6 +41,7 @@ def main():
 
     episode_stats = []
     mean_stats = []
+    best_mean_reward = -float('inf')
 
     is_ai_running = False
 
@@ -57,7 +62,7 @@ def main():
                 print("⚠️ Connection lost.")
                 if is_ai_running and actor_critic is not None:
                     NeuralNetUtilities.save_model(actor_critic, ppo_trainer.optimizer)
-                    FileUtilities.save_file(FILE_NAME, episodes_counter, reward_stack, episode_stats, mean_stats)
+                    FileUtilities.save_file(FILE_NAME, episodes_counter, reward_stack, episode_stats, mean_stats, best_mean_reward)
                 break
 
             boss_scene = state['bossScene']
@@ -73,8 +78,19 @@ def main():
                 actor_critic = ActorCritic(input_dim, output_dim)
                 ppo_trainer = NeuralNetTraining(actor_critic)
 
-                NeuralNetUtilities.load_model(actor_critic, ppo_trainer.optimizer)
-                episodes_counter, reward_stack, episode_stats, mean_stats = FileUtilities.load_file(FILE_NAME)
+                #best_actor_critic = ActorCritic(input_dim, output_dim)
+                #best_ppo_trainer = NeuralNetTraining(best_actor_critic)
+
+                NeuralNetUtilities.load_model(actor_critic, ppo_trainer.optimizer) # loading the current model
+                #NeuralNetUtilities.load_model(best_actor_critic, best_ppo_trainer.optimizer, file_name='HK_model_best.pth') # loading the best model
+
+                episodes_counter, reward_stack, episode_stats, mean_stats, best_mean_reward = FileUtilities.load_file(FILE_NAME)
+
+                print('episodes_counter: ', episodes_counter)
+                print('reward_stack amount: ', len(reward_stack))
+                print('episode_stats amount: ', len(episode_stats))
+                print('mean_stats amount: ', len(mean_stats))
+                print('best performance: ', best_mean_reward)
 
                 #return
                 is_ai_running = True
@@ -126,7 +142,7 @@ def main():
                         with torch.no_grad():
                             next_value = actor_critic.get_value(state_tensor)
 
-                    next_value = next_value.squeeze()
+                    next_value = next_value.detach()
 
                     ppo_trainer.update(actor_critic, rollout_buffer, next_value)
 
@@ -136,10 +152,18 @@ def main():
 
                     reward_stack.append(total_reward)
 
+                    current_mean = statistics.mean(reward_stack)
+
+                    if len(reward_stack) == reward_stack.maxlen:
+                        if current_mean > best_mean_reward:
+                            best_mean_reward = current_mean
+                            NeuralNetUtilities.save_model(actor_critic, ppo_trainer.optimizer, file_name='HK_Model_best.pth')
+                            print(f'New best performance: {current_mean}')
+
                     if episodes_counter % 10 == 0 and len(reward_stack) > 0:
                         episode_stats.append(episodes_counter)
-                        mean_stats.append(statistics.mean(reward_stack))
-                        print(f'Episode: {episodes_counter} | Mean Reward: {statistics.mean(reward_stack)}')
+                        mean_stats.append(current_mean)
+                        print(f'Episode: {episodes_counter} | Mean Reward: {current_mean}')
 
                     total_reward = 0
                     old_state = None
@@ -157,12 +181,12 @@ def main():
 
             if frames_count > 0 and frames_count % SAVE_INTERVAL == 0:
                 NeuralNetUtilities.save_model(actor_critic, ppo_trainer.optimizer)
-                FileUtilities.save_file(FILE_NAME, episodes_counter, reward_stack, episode_stats, mean_stats)
+                FileUtilities.save_file(FILE_NAME, episodes_counter, reward_stack, episode_stats, mean_stats, best_mean_reward)
 
     except KeyboardInterrupt:
         if is_ai_running and actor_critic is not None:
             NeuralNetUtilities.save_model(actor_critic, ppo_trainer.optimizer)
-            FileUtilities.save_file(FILE_NAME, episodes_counter, reward_stack, episode_stats, mean_stats)
+            FileUtilities.save_file(FILE_NAME, episodes_counter, reward_stack, episode_stats, mean_stats, best_mean_reward)
     finally:
         pipe.disconnect()
 

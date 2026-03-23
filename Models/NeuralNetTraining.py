@@ -27,7 +27,9 @@ class NeuralNetTraining:
             gae = delta + self.gamma * lam * (1 - dones[step]) * gae
             advantages.insert(0, gae)
 
-        advantages = torch.stack(advantages)
+        advantages = torch.stack(advantages).view(-1)
+        values = values.view(-1)
+
         returns = advantages + values.detach()
 
         advantages = (advantages - advantages.mean()) / (advantages.std() + 1e-7)
@@ -46,7 +48,7 @@ class NeuralNetTraining:
             rewards = rewards,
             values = old_values,
             dones = dones,
-            next_value=next_value
+            next_value=next_value.detach()
         )
 
         batch_size = old_states.size(0)
@@ -64,24 +66,23 @@ class NeuralNetTraining:
                 batch_actions = old_actions[batch_idx]
                 batch_log_probs = old_log_probs[batch_idx]
                 batch_advantages = advantages[batch_idx]
-                #batch_rewards = rewards[batch_idx]
                 batch_rewards = returns[batch_idx]
 
                 log_probs, state_values, dist_entropy = actor_critic.evaluate(batch_states, batch_actions)
 
                 state_values = state_values.view(-1)
-                dist_entropy = dist_entropy.mean()
 
                 ratios = torch.exp(log_probs - batch_log_probs)
 
                 surr1 = ratios * batch_advantages
                 surr2 = torch.clamp(ratios, 1 - self.eps_clip, 1 + self.eps_clip) * batch_advantages
 
-                loss = -torch.min(surr1, surr2) + 0.5 * self.mse_loss(state_values.view(-1), batch_rewards) - 0.01 * dist_entropy
+                loss = -torch.min(surr1, surr2) + 0.5 * self.mse_loss(state_values.view(-1), batch_rewards) - 0.01 * dist_entropy.mean()
                 loss = loss.mean()
 
                 self.optimizer.zero_grad()
                 loss.backward()
+                torch.nn.utils.clip_grad_norm_(actor_critic.parameters(), 0.5)
                 self.optimizer.step()
 
         buffer.clear()

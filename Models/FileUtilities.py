@@ -14,7 +14,18 @@ class FileUtilities:
         try:
             with open(file_name, "rb") as file:
                 print("💾 Stats loaded")
-                return pickle.load(file)
+                data = pickle.load(file)
+
+                if len(data) == 4:
+                    episodes_counter, reward_stack, episode_stats, mean_stats = data
+                    best_mean_reward = -float("inf")
+                elif len(data) == 5:
+                    episodes_counter, reward_stack, episode_stats, mean_stats, best_mean_reward = data
+                else:
+                    raise ValueError("Invalid file format")
+
+                return episodes_counter, reward_stack, episode_stats, mean_stats, best_mean_reward
+
         except FileNotFoundError:
             print("⚠️ File not found. Creating new file")
-            return 0, deque(maxlen=100), [], []
+            return 0, deque(maxlen=100), [], [], -float("inf")

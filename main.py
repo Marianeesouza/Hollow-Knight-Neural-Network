@@ -19,6 +19,11 @@ NUM_FRAMES = 4
 
 FILE_NAME = 'stats.pkl'
 
+def save_data(is_ai_running, actor_critic, ppo_trainer, is_training, *stats):
+    if is_ai_running and actor_critic is not None and is_training:
+        NeuralNetUtilities.save_model(actor_critic, ppo_trainer.optimizer)
+        FileUtilities.save_file(FILE_NAME, stats)
+
 def main():
     pipe = ClientPipe.Pipe()
     pipe.connect()
@@ -29,9 +34,6 @@ def main():
 
     actor_critic = None
     ppo_trainer = None
-
-    #best_actor_critic = None
-    #best_ppo_trainer = None
 
     rollout_buffer = RolloutBuffer()
     virtual_gamepad = VirtualGamePad()
@@ -44,6 +46,7 @@ def main():
     best_mean_reward = -float('inf')
 
     is_ai_running = False
+    is_training = True
 
     old_state = None
     old_data = None
@@ -60,16 +63,17 @@ def main():
 
             if state is None:
                 print("⚠️ Connection lost.")
-                if is_ai_running and actor_critic is not None:
-                    NeuralNetUtilities.save_model(actor_critic, ppo_trainer.optimizer)
-                    FileUtilities.save_file(FILE_NAME, episodes_counter, reward_stack, episode_stats, mean_stats, best_mean_reward)
+                save_data(is_ai_running, actor_critic, ppo_trainer, is_training, episodes_counter, reward_stack, episode_stats, mean_stats, best_mean_reward)
                 break
+                # if is_ai_running and actor_critic is not None and is_training:
+                #     NeuralNetUtilities.save_model(actor_critic, ppo_trainer.optimizer)
+                #     FileUtilities.save_file(FILE_NAME, episodes_counter, reward_stack, episode_stats, mean_stats, best_mean_reward)
+                # break
 
             boss_scene = state['bossScene']
-
             data = DataHandler.treat_data(state)    # treating the data from the pipe
 
-            #only start the neural_net (is_ai_running) if the player is in the boss scene
+            # only start the neural_net (is_ai_running) if the player is in the boss scene
             if (boss_scene is not None and boss_scene == BOSS_SCENE_HASH) and not is_ai_running:
 
                 input_dim = DataHandler.stored_size(data) * NUM_FRAMES
@@ -78,11 +82,7 @@ def main():
                 actor_critic = ActorCritic(input_dim, output_dim)
                 ppo_trainer = NeuralNetTraining(actor_critic)
 
-                #best_actor_critic = ActorCritic(input_dim, output_dim)
-                #best_ppo_trainer = NeuralNetTraining(best_actor_critic)
-
                 NeuralNetUtilities.load_model(actor_critic, ppo_trainer.optimizer) # loading the current model
-                #NeuralNetUtilities.load_model(best_actor_critic, best_ppo_trainer.optimizer, file_name='HK_model_best.pth') # loading the best model
 
                 episodes_counter, reward_stack, episode_stats, mean_stats, best_mean_reward = FileUtilities.load_file(FILE_NAME)
 
@@ -116,77 +116,79 @@ def main():
 
             virtual_gamepad.update_gamepad(active_actions)  # execute those actions
 
-            # if we are not on the first frame
-            if old_state is not None:
-                reward, done = NeuralNetUtilities.calculate_reward(old_state, state)  # calculate the reward of the current state based on the prev. one
-                total_reward += reward  # sum this reward value
+            if is_training:
+                # if we are not on the first frame
+                if old_state is not None:
+                    reward, done = NeuralNetUtilities.calculate_reward(old_state, state)  # calculate the reward of the current state based on the prev. one
+                    total_reward += reward  # sum this reward value
 
-                # save those values into a buffer
-                rollout_buffer.push(
-                    state=torch.FloatTensor(old_data),
-                    action=last_action,
-                    reward=reward,
-                    is_terminal=done,
-                    log_prob=last_log_prob,
-                    value=last_value
-                )
+                    # save those values into a buffer
+                    rollout_buffer.push(
+                        state=torch.FloatTensor(old_data),
+                        action=last_action,
+                        reward=reward,
+                        is_terminal=done,
+                        log_prob=last_log_prob,
+                        value=last_value
+                    )
 
-                # frame count for frame memory
-                frames_count += 1
+                    # frame count for frame memory
+                    frames_count += 1
 
-                if frames_count % UPDATE_TIMESTEP == 0:
+                    if frames_count % UPDATE_TIMESTEP == 0:
+
+                        if done:
+                            next_value = torch.tensor(0.0, dtype=torch.float)
+                        else:
+                            with torch.no_grad():
+                                next_value = actor_critic.get_value(state_tensor)
+
+                        next_value = next_value.detach()
+
+                        ppo_trainer.update(actor_critic, rollout_buffer, next_value)
 
                     if done:
-                        next_value = torch.tensor(0.0, dtype=torch.float)
-                    else:
-                        with torch.no_grad():
-                            next_value = actor_critic.get_value(state_tensor)
+                        episodes_counter += 1
+                        #print(f'Episode: {episodes_counter} | Reward: {total_reward}')
 
-                    next_value = next_value.detach()
+                        reward_stack.append(total_reward)
 
-                    ppo_trainer.update(actor_critic, rollout_buffer, next_value)
+                        current_mean = statistics.mean(reward_stack)
 
-                if done:
-                    episodes_counter += 1
-                    #print(f'Episode: {episodes_counter} | Reward: {total_reward}')
+                        if len(reward_stack) == reward_stack.maxlen:
+                            if current_mean > best_mean_reward:
+                                best_mean_reward = current_mean
+                                NeuralNetUtilities.save_model(actor_critic, ppo_trainer.optimizer, file_name='HK_Model_best.pth')
+                                print(f'New best performance: {current_mean}')
 
-                    reward_stack.append(total_reward)
+                        if episodes_counter % 10 == 0 and len(reward_stack) > 0:
+                            episode_stats.append(episodes_counter)
+                            mean_stats.append(current_mean)
+                            print(f'Episode: {episodes_counter} | Mean Reward: {current_mean} | STD: {statistics.stdev(reward_stack)}')
 
-                    current_mean = statistics.mean(reward_stack)
+                        total_reward = 0
+                        old_state = None
+                        old_data = None
+                        frame_stack.clear()
 
-                    if len(reward_stack) == reward_stack.maxlen:
-                        if current_mean > best_mean_reward:
-                            best_mean_reward = current_mean
-                            NeuralNetUtilities.save_model(actor_critic, ppo_trainer.optimizer, file_name='HK_Model_best.pth')
-                            print(f'New best performance: {current_mean}')
+                        continue
 
-                    if episodes_counter % 10 == 0 and len(reward_stack) > 0:
-                        episode_stats.append(episodes_counter)
-                        mean_stats.append(current_mean)
-                        print(f'Episode: {episodes_counter} | Mean Reward: {current_mean} | STD: {statistics.stdev(reward_stack)}')
+                old_state = state.copy()
+                old_data = stacked_data.copy()
 
-                    total_reward = 0
-                    old_state = None
-                    old_data = None
-                    frame_stack.clear()
+                last_action = action.squeeze(0).detach()
+                last_log_prob = action_log_prob.squeeze(0).detach()
+                last_value = state_value.squeeze(0).detach()
 
-                    continue
-
-            old_state = state.copy()
-            old_data = stacked_data.copy()
-
-            last_action = action.squeeze(0).detach()
-            last_log_prob = action_log_prob.squeeze(0).detach()
-            last_value = state_value.squeeze(0).detach()
-
-            if frames_count > 0 and frames_count % SAVE_INTERVAL == 0:
-                NeuralNetUtilities.save_model(actor_critic, ppo_trainer.optimizer)
-                FileUtilities.save_file(FILE_NAME, episodes_counter, reward_stack, episode_stats, mean_stats, best_mean_reward)
+                if frames_count > 0 and frames_count % SAVE_INTERVAL == 0:
+                    NeuralNetUtilities.save_model(actor_critic, ppo_trainer.optimizer)
+                    FileUtilities.save_file(FILE_NAME, episodes_counter, reward_stack, episode_stats, mean_stats, best_mean_reward)
 
     except KeyboardInterrupt:
-        if is_ai_running and actor_critic is not None:
-            NeuralNetUtilities.save_model(actor_critic, ppo_trainer.optimizer)
-            FileUtilities.save_file(FILE_NAME, episodes_counter, reward_stack, episode_stats, mean_stats, best_mean_reward)
+        save_data(is_ai_running, actor_critic, ppo_trainer, is_training, episodes_counter, reward_stack, episode_stats, mean_stats, best_mean_reward)
+        # if is_ai_running and actor_critic is not None and is_training:
+        #     NeuralNetUtilities.save_model(actor_critic, ppo_trainer.optimizer)
+        #     FileUtilities.save_file(FILE_NAME, episodes_counter, reward_stack, episode_stats, mean_stats, best_mean_reward)
     finally:
         pipe.disconnect()
 

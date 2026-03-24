@@ -163,7 +163,7 @@ def main():
                     if episodes_counter % 10 == 0 and len(reward_stack) > 0:
                         episode_stats.append(episodes_counter)
                         mean_stats.append(current_mean)
-                        print(f'Episode: {episodes_counter} | Mean Reward: {current_mean}')
+                        print(f'Episode: {episodes_counter} | Mean Reward: {current_mean} | STD: {statistics.stdev(reward_stack)}')
 
                     total_reward = 0
                     old_state = None

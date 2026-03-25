@@ -53,41 +53,27 @@ This project uses a named pipe to connect the Hollow Knight process to the neura
 
 Frame stacking: 4 frames
 
-### C#/DataExtractor
-- Connection: Named pipe called HK_RL_Pipe with direction of out, meaning that it only send data
+## Reward Function
 
-- Game States: 
-    - px: Player x position
-    - py: Player y position
-    - pvx: Player x velocity
-    - pvy: Player y velocity
-    - hp: Player health points
-    - maxHP: Player maximum health points possible
-    - soul: Player magic points
-    - maxSoul: Player maximum magic points possible
-    - facingRight: If the player facing direction
-    - onGround: If the player is currently on ground
-    - jumping: If the player is currently jumping
-    - dashing: If the player is currently dashing
-    - invulnerable: If the player is currently invulnerable to damage
-    - isAttacking: If the player is currently performing an attack
-    
-    - bx: Boss x position
-    - by: Boss y position
-    - bvx: Boss x velocity
-    - bvy: Boss y velocity
-    - bossHp: Boss health points
-    - bossMaxHp: Boss maximum health points possible
-    - bossState: Boss current animation state
-    - bossStateAmount: Amount of boss animation states
-    - bossScene: Hashcode of the boss arena
+- Boss damage: +damage delt
+- Player damage: -40
+- Heal: +5
+- Death: -75
+- Boss kill: +75
+- Distance shaping: encourages approaching the boss
 
-### Models/ClientPipe
-Connects to the named pipe created by the C# mod
+## Training
 
-### DataHandler
-Treat the data came from the pipe to make it usefull inside the neural network
+- Algorithm: PPO
+- Learning rate: 0.0003
+- Gamma: 0.99
+- GAE lambda: 0.95
+- Clip: 0.2
+- Batch size: 4096
+- Mini-batch: 64
+- Epochs: 8
 
-### main
-Creates two neural networks, the actor and the critic, then train them and take actions using VirtualGamePad class
+## Setup
+
+
 

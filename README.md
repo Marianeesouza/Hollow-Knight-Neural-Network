@@ -90,5 +90,9 @@ Frame stacking: 4 frames
 ## Run
 
 1. Run `main.py`
-2. In-game, go to the **Hornet Protector** statue in the **Hall of Gods**.
+2. In-game, go to the **Hornet Protector** statue in the **Hall of Gods** and start the Attuned difficulty.
+
+## Possible Improvement
+
+- Restart the trained with a better reward function with adjusted values for winning(defeating the boss) and losing(be defeated by the boss)
 

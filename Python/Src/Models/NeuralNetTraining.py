@@ -1,7 +1,7 @@
 import torch
 import torch.nn as nn
 
-from Models.RolloutBuffer import RolloutBuffer
+from Python.Src.Data.RolloutBuffer import RolloutBuffer
 
 
 class NeuralNetTraining:

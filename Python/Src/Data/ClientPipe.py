@@ -1,8 +1,6 @@
 import time
 import struct
 
-from Models.DataHandler import DataHandler
-
 
 class Pipe:
     def __init__(self, pipe_name='HK_RL_Pipe'):

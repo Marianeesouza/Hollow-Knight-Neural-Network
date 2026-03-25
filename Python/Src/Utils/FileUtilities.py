@@ -1,18 +1,27 @@
 import pickle
+import os
 from collections import deque
 
 class FileUtilities:
 
     @staticmethod
-    def save_file(file_name, *data):
-        with open(file_name, "wb") as file:
+    def save_file(file_name: str = 'stats.pkl', *data):
+
+        file_path = os.path.join('Checkpoints', 'Statistic', file_name)
+
+        os.makedirs(os.path.dirname(file_path), exist_ok=True)
+
+        with open(file_path, "wb") as file:
             pickle.dump(data, file, protocol=pickle.HIGHEST_PROTOCOL)
-            print("💾 Stats saved")
+            print(f"💾 Stats saved to {file_path}")
 
     @staticmethod
-    def load_file(file_name):
+    def load_file(file_name: str = 'stats.pkl'):
+
+        file_path = os.path.join('Checkpoints', 'Statistic', file_name)
+
         try:
-            with open(file_name, "rb") as file:
+            with open(file_path, "rb") as file:
                 print("💾 Stats loaded")
                 data = pickle.load(file)
 
@@ -30,5 +39,5 @@ class FileUtilities:
                 return episodes_counter, reward_stack, episode_stats, mean_stats, best_mean_reward
 
         except FileNotFoundError:
-            print("⚠️ File not found. Creating new file")
+            print(f"⚠️ File not found at {file_path}. Creating new empty file")
             return 0, deque(maxlen=100), [], [], -float("inf")

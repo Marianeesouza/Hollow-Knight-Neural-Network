@@ -2,14 +2,14 @@ import torch
 import numpy as np
 import statistics
 
-from Models import ClientPipe
-from Models.DataHandler import DataHandler
-from Models.ActorCritic import ActorCritic
-from Models.FileUtilities import FileUtilities
-from Models.NeuralNetTraining import NeuralNetTraining
-from Models.NeuralNetUtilities import NeuralNetUtilities
-from Models.RolloutBuffer import RolloutBuffer
-from Models.VirtualGamePad import VirtualGamePad
+from Python.Src.Data import ClientPipe
+from Python.Src.Data.DataHandler import DataHandler
+from Python.Src.Models.ActorCritic import ActorCritic
+from Python.Src.Utils.FileUtilities import FileUtilities
+from Python.Src.Models.NeuralNetTraining import NeuralNetTraining
+from Python.Src.Utils.NeuralNetUtilities import NeuralNetUtilities
+from Python.Src.Data.RolloutBuffer import RolloutBuffer
+from Python.Src.Utils.VirtualGamePad import VirtualGamePad
 from collections import deque
 
 SAVE_INTERVAL = 90000
@@ -84,7 +84,7 @@ def main():
 
                 NeuralNetUtilities.load_model(actor_critic, ppo_trainer.optimizer) # loading the current model
 
-                episodes_counter, reward_stack, episode_stats, mean_stats, best_mean_reward = FileUtilities.load_file(FILE_NAME)
+                episodes_counter, reward_stack, episode_stats, mean_stats, best_mean_reward = FileUtilities.load_file()
 
                 print('episodes_counter: ', episodes_counter)
                 print('reward_stack amount: ', len(reward_stack))
@@ -158,7 +158,7 @@ def main():
                         if len(reward_stack) == reward_stack.maxlen:
                             if current_mean > best_mean_reward:
                                 best_mean_reward = current_mean
-                                NeuralNetUtilities.save_model(actor_critic, ppo_trainer.optimizer, file_name='HK_Model_best.pth')
+                                NeuralNetUtilities.save_model(actor_critic, ppo_trainer.optimizer, file_name='Checkpoints/Weights/HK_Model_best.pth')
                                 print(f'New best performance: {current_mean}')
 
                         if episodes_counter % 10 == 0 and len(reward_stack) > 0:

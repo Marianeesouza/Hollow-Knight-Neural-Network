@@ -1,27 +1,29 @@
-from collections import deque
-
 import numpy as np
 import torch
 import os
-
-from Models.DataHandler import DataHandler
 
 
 class NeuralNetUtilities:
 
     @staticmethod
     def save_model(actor_critic, optimizer, file_name: str = 'HK_Model.pth'):
+
+        file_path = os.path.join('Checkpoints', 'Weights', file_name)
+
         checkpoint = {
             'model_state_dict': actor_critic.state_dict(),
             'optimizer_state_dict': optimizer.state_dict(),
         }
-        torch.save(checkpoint, file_name)
+        torch.save(checkpoint, file_path)
         print("💾 Model saved")
 
     @staticmethod
     def load_model(actor_critic, optimizer, file_name: str = 'HK_Model.pth'):
-        if os.path.exists(file_name):
-            checkpoint = torch.load(file_name, weights_only=False)
+
+        file_path = os.path.join('Checkpoints', 'Weights', file_name)
+
+        if os.path.exists(file_path):
+            checkpoint = torch.load(file_path, weights_only=False)
             actor_critic.load_state_dict(checkpoint['model_state_dict'])
             optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
             print("💾 Model loaded")

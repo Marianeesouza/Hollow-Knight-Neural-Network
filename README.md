@@ -58,6 +58,8 @@ Frame stacking: 4 frames
 - Boss damage: +damage dealt
 - Player damage: -40
 - Heal: +5
+- Death: -1 (insignificant)
+- Boss kill: +1 (insignificant)
 - Distance shaping: encourages approaching the boss
 
 ## Training
@@ -76,7 +78,7 @@ Frame stacking: 4 frames
 ### Requirements
 - Hollow Knight (Tested on Steam version)
 - BepInEx 5.4.x
-- Python 3.10+
+- Python used 3.13.9
 - vgamepad, torch, numpy (see requirements.txt)
 
 ### Installation

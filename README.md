@@ -1,5 +1,5 @@
 # Hollow-Knight-Neural-Network
-A neural network model capable of playing Hollow Knight to defeat the Hornet
+A neural network model capable of playing Hollow Knight to defeat the Hornet Protector at Hall of Gods
 
 ## Overview
 This project uses a named pipe to connect the Hollow Knight process to the neural network model.
@@ -55,11 +55,9 @@ Frame stacking: 4 frames
 
 ## Reward Function
 
-- Boss damage: +damage delt
+- Boss damage: +damage dealt
 - Player damage: -40
 - Heal: +5
-- Death: -75
-- Boss kill: +75
 - Distance shaping: encourages approaching the boss
 
 ## Training
@@ -75,5 +73,18 @@ Frame stacking: 4 frames
 
 ## Setup
 
+### Requirements
+- Hollow Knight (Tested on Steam version)
+- BepInEx 5.4.x
+- Python 3.10+
+- vgamepad, torch, numpy (see requirements.txt)
+
+### Installation
+1. Move the `DataExtractor.dll` from `\C#\DataExtractor\bin\Debug` to your game's plugins folder: 
+   `...\Hollow Knight\BepInEx\plugins`
+2. Install Python dependencies:
+   `pip install -r requirements.txt`
+3. Run `main.py`
+4. In-game, go to the **Hornet Protector** statue in the **Hall of Gods**.
 
 

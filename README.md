@@ -86,7 +86,9 @@ Frame stacking: 4 frames
    `...\Hollow Knight\BepInEx\plugins`
 2. Install Python dependencies:
    `pip install -r requirements.txt`
-3. Run `main.py`
-4. In-game, go to the **Hornet Protector** statue in the **Hall of Gods**.
 
+## Run
+
+1. Run `main.py`
+2. In-game, go to the **Hornet Protector** statue in the **Hall of Gods**.
 

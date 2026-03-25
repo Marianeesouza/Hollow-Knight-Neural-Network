@@ -1,8 +1,8 @@
 # Hollow-Knight-Neural-Network
-A neural network model capable of playing Hollow Knight to defeat the Hornet Protector at Hall of Gods
+A neural network model capable of playing Hollow Knight to defeat the Hornet Protector at Hall of Gods.
 
 ## Overview
-This project uses a named pipe to connect the Hollow Knight process to the neural network model.
+This project combines a Unity mod to extract data from the game in real time with a Python-based AI model to fight a boss using PPO (proximal Policy Optimization).
 
 - **Data Extractor**: A Unity C# mod made with BepInEx that hooks C# code into the game. Inside the mod, a named pipe is opened to create a connection and extract game states.
 - **Python**: Connects to the named pipe - runs and trains the model to predict action, then uses the vgamepad library to execute the commands.

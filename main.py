@@ -22,7 +22,7 @@ FILE_NAME = 'stats.pkl'
 def save_data(is_ai_running, actor_critic, ppo_trainer, is_training, *stats):
     if is_ai_running and actor_critic is not None and is_training:
         NeuralNetUtilities.save_model(actor_critic, ppo_trainer.optimizer)
-        FileUtilities.save_file(FILE_NAME, stats)
+        FileUtilities.save_file(FILE_NAME, *stats)
 
 def main():
     pipe = ClientPipe.Pipe()

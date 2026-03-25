@@ -16,7 +16,10 @@ class FileUtilities:
                 print("💾 Stats loaded")
                 data = pickle.load(file)
 
-                if len(data) == 4:
+                if len(data) == 1 and isinstance(data[0], tuple):
+                    data = data[0]
+                    return data
+                elif len(data) == 4:
                     episodes_counter, reward_stack, episode_stats, mean_stats = data
                     best_mean_reward = -float("inf")
                 elif len(data) == 5:

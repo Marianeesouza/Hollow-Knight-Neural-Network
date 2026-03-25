@@ -12,7 +12,7 @@ This project combines a Unity mod to extract data from the game in real time wit
 - **Best mean reward**: x
 - Trained for x episodes
 
-![demo](assets/demo.gif)
+![demo](assets/hkgif.gif)
 
 ![video](assets/videolink.txt)
 

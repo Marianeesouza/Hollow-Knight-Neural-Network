@@ -47,7 +47,7 @@ public class DataExtractorMod : BaseUnityPlugin
         pipeThread.Start(); // initiating thread process here
                             // 
 
-        Time.timeScale = 3f;
+        //Time.timeScale = 3f;
     }
 
     private void FixedUpdate()
@@ -297,7 +297,7 @@ public class DataExtractorMod : BaseUnityPlugin
                                 }
                             }
 
-                            Time.timeScale = 3f;
+                            //Time.timeScale = 3f;
 
                             // Position flags
                             playerState.bx = boss.transform.position.x;
@@ -332,26 +332,26 @@ public class DataExtractorMod : BaseUnityPlugin
     }
 }
 
-[HarmonyPatch(typeof(HeroController), "Die")]
-public class HeroControllerDiePatch
-{
-    [HarmonyPrefix]
-    public static bool Prefix()
-    {
-        DataExtractorMod.Instance?.StartDeathReload();
+//[HarmonyPatch(typeof(HeroController), "Die")]
+//public class HeroControllerDiePatch
+//{
+//    [HarmonyPrefix]
+//    public static bool Prefix()
+//    {
+//        DataExtractorMod.Instance?.StartDeathReload();
 
-        return false;
-    }
-}
+//        return false;
+//    }
+//}
 
-[HarmonyPatch(typeof(HealthManager), "Die")]
-public class HealthManagerDiePatch
-{
-    [HarmonyPrefix]
-    public static bool Prefix()
-    {
-        DataExtractorMod.Instance?.StartDeathReload();
-        return false;
-    }
-}
+//[HarmonyPatch(typeof(HealthManager), "Die")]
+//public class HealthManagerDiePatch
+//{
+//    [HarmonyPrefix]
+//    public static bool Prefix()
+//    {
+//        DataExtractorMod.Instance?.StartDeathReload();
+//        return false;
+//    }
+//}
 

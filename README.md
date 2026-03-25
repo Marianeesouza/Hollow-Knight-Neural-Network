@@ -24,7 +24,7 @@ This project uses a named pipe to connect the Hollow Knight process to the neura
 
 ## State Representation
 
-- Player States
+- **Player States**
     - px: Player x position
     - py: Player y position
     - pvx: Player x velocity
@@ -40,7 +40,7 @@ This project uses a named pipe to connect the Hollow Knight process to the neura
     - invulnerable: If the player is currently invulnerable to damage
     - isAttacking: If the player is currently performing an attack
 
-- Boss States
+- **Boss States**
     - bx: Boss x position
     - by: Boss y position
     - bvx: Boss x velocity
@@ -92,7 +92,8 @@ Frame stacking: 4 frames
 1. Run `main.py`
 2. In-game, go to the **Hornet Protector** statue in the **Hall of Gods** and start the Attuned difficulty.
 
-## Possible Improvement
+## Future Improvements
 
-- Restart the trained with a better reward function with adjusted values for winning(defeating the boss) and losing(be defeated by the boss)
+- **Reward Function Refinement**: Implementation of a more balanced reward scaling between intermediate actions (damage dealt/taken) and terminal states (victory/defeat) to prevent reward hacking and encourage more aggressive playstyles.
 
+- **Hyperparameter Tuning**: Experimenting with different learning rates and entropy coefficients to improve exploration in the early stages of training.

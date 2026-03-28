@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="422bbfc9-e04b-428d-a523-7d368229d179" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/Python/Src/Utils/StatsUtilities.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Python/Checkpoints/Statistic/stats.pkl" beforeDir="false" afterPath="$PROJECT_DIR$/Python/Checkpoints/Statistic/stats.pkl" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Python/Checkpoints/Weights/HK_Model.pth" beforeDir="false" afterPath="$PROJECT_DIR$/Python/Checkpoints/Weights/HK_Model.pth" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Python/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/Python/main.py" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Python Script" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="ProblemsViewState">
+    <option name="selectedTabId" value="CurrentFile" />
+  </component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 7
+}</component>
+  <component name="ProjectId" id="39r6ZjPD46htE3WzcXPQKIxj5zy" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
+    &quot;Python.ActorCritic.executor&quot;: &quot;Run&quot;,
+    &quot;Python.ClientPipe.executor&quot;: &quot;Run&quot;,
+    &quot;Python.DataHandler.executor&quot;: &quot;Run&quot;,
+    &quot;Python.NeuralNet.executor&quot;: &quot;Run&quot;,
+    &quot;Python.NeuralNetTraining.executor&quot;: &quot;Run&quot;,
+    &quot;Python.NeuralNetUtilities.executor&quot;: &quot;Run&quot;,
+    &quot;Python.Neuron.executor&quot;: &quot;Run&quot;,
+    &quot;Python.VirtualGamePad.executor&quot;: &quot;Run&quot;,
+    &quot;Python.main.executor&quot;: &quot;Run&quot;,
+    &quot;Python.test_pipe.executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.typescript.service.memoryLimit.init&quot;: &quot;true&quot;,
+    &quot;ai.playground.ignore.import.keys.banner.in.settings&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;develop&quot;,
+    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;D:/Documentos/Pasta Projetos/Hollow-Knight-Neural-Network&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  }
+}</component>
+  <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="D:\Documentos\Pasta Projetos\Hollow-Knight-Neural-Network\Python" />
+      <recent name="D:\Documentos\Pasta Projetos\Hollow-Knight-Neural-Network\Checkpoints\Statistic" />
+      <recent name="D:\Documentos\Pasta Projetos\Hollow-Knight-Neural-Network\Checkpoints\Weights" />
+      <recent name="D:\Documentos\Pasta Projetos\Hollow-Knight-Neural-Network\Python\Src\Utils" />
+      <recent name="D:\Documentos\Pasta Projetos\Hollow-Knight-Neural-Network\Python\Src\Data" />
+    </key>
+  </component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-python-sdk-4762d8aabb82-6d6dccd035ac-com.jetbrains.pycharm.pro.sharedIndexes.bundled-PY-253.30387.173" />
+      </set>
+    </attachedChunks>
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="422bbfc9-e04b-428d-a523-7d368229d179" name="Changes" comment="" />
+      <created>1771441900284</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1771441900284</updated>
+      <workItem from="1771441901291" duration="7874000" />
+      <workItem from="1771451067083" duration="450000" />
+      <workItem from="1771453328366" duration="1209000" />
+      <workItem from="1771463220360" duration="6831000" />
+      <workItem from="1771501393119" duration="10067000" />
+      <workItem from="1771518567754" duration="2001000" />
+      <workItem from="1771521978067" duration="4205000" />
+      <workItem from="1771586340774" duration="14466000" />
+      <workItem from="1771608161827" duration="327000" />
+      <workItem from="1771608774769" duration="8252000" />
+      <workItem from="1771670099605" duration="748000" />
+      <workItem from="1771681411676" duration="8043000" />
+      <workItem from="1771701710636" duration="8852000" />
+      <workItem from="1771759097934" duration="7330000" />
+      <workItem from="1771794144939" duration="3741000" />
+      <workItem from="1771798910243" duration="1217000" />
+      <workItem from="1771806590753" duration="5370000" />
+      <workItem from="1771865871209" duration="5759000" />
+      <workItem from="1771941636856" duration="1143000" />
+      <workItem from="1771943115273" duration="3436000" />
+      <workItem from="1771952210514" duration="6672000" />
+      <workItem from="1772039649471" duration="2560000" />
+      <workItem from="1772539392805" duration="310000" />
+      <workItem from="1773256797252" duration="14000" />
+      <workItem from="1773932259785" duration="8641000" />
+      <workItem from="1773944600097" duration="266000" />
+      <workItem from="1773948294425" duration="2261000" />
+      <workItem from="1774013925335" duration="19000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="com.intellij.coverage.CoverageDataManagerImpl">
+    <SUITE FILE_PATH="coverage/Neural_Network$DataHandler.coverage" NAME="DataHandler Coverage Results" MODIFIED="1771521097242" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Models" />
+    <SUITE FILE_PATH="coverage/Neural_Network$test_pipe.coverage" NAME="test_pipe Coverage Results" MODIFIED="1771454575052" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/Neural_Network$Neuron.coverage" NAME="Neuron Coverage Results" MODIFIED="1771589406370" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Models" />
+    <SUITE FILE_PATH="coverage/Neural_Network$VirtualGamePad.coverage" NAME="VirtualGamePad Coverage Results" MODIFIED="1771609359177" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Models" />
+    <SUITE FILE_PATH="coverage/Neural_Network$ActorCritic.coverage" NAME="ActorCritic Coverage Results" MODIFIED="1771953072344" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Models" />
+    <SUITE FILE_PATH="coverage/Neural_Network$NeuralNetTraining.coverage" NAME="NeuralNetTraining Coverage Results" MODIFIED="1771809373580" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Models" />
+    <SUITE FILE_PATH="coverage/Hollow_Knight_Neural_Network$main.coverage" NAME="main Coverage Results" MODIFIED="1773949875334" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/Neural_Network$NeuralNet.coverage" NAME="NeuralNet Coverage Results" MODIFIED="1771597452501" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Models" />
+    <SUITE FILE_PATH="coverage/Neural_Network$ClientPipe.coverage" NAME="ClientPipe Coverage Results" MODIFIED="1771953068125" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Models" />
+    <SUITE FILE_PATH="coverage/Neural_Network$NeuralNetUtilities.coverage" NAME="NeuralNetUtilities Coverage Results" MODIFIED="1771808794541" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Models" />
+    <SUITE FILE_PATH="coverage/Neural_Network$main.coverage" NAME="main Coverage Results" MODIFIED="1773943046163" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+  </component>
+</project>

@@ -2,7 +2,7 @@
 A neural network model capable of playing Hollow Knight to defeat the Hornet Protector at Hall of Gods.
 
 ## Overview
-This project combines a Unity mod to extract data from the game in real time with a Python-based AI model to fight a boss using PPO (proximal Policy Optimization).
+This project combines a Unity mod to extract data from the game in real time with a Python-based AI model to fight a boss using PPO (Proximal Policy Optimization).
 
 - **Data Extractor**: A Unity C# mod made with BepInEx that hooks C# code into the game. Inside the mod, a named pipe is opened to create a connection and extract game states.
 - **Python**: Connects to the named pipe - runs and trains the model to predict action, then uses the vgamepad library to execute the commands.
@@ -16,15 +16,15 @@ This project combines a Unity mod to extract data from the game in real time wit
 
 ![video](assets/videolink.txt)
 
-![graph](assets/graph.png)
+![graph](assets/performance_graph.png)
 
 ## Architecture
 
-- Input: Game state (player/boss position, velocity, HP, etc.)
-- Preprocessing: normalization + frame stacking (4 frames)
-- Model: Actor-Critic (multi-binary actions using Bernoulli distribution)
-- Algorithm: PPO with GAE (λ=0.95)
-- Output: Virtual gamepad inputs
+- **Input**: Game state (player/boss position, velocity, HP, etc.)
+- **Preprocessing**: normalization + frame stacking (4 frames)
+- **Model**: Actor-Critic (multi-binary actions using Bernoulli distribution)
+- **Algorithm**: PPO with GAE (λ=0.95)
+- **Output**: Virtual gamepad inputs
 
 ## State Representation
 
@@ -55,7 +55,7 @@ This project combines a Unity mod to extract data from the game in real time wit
     - bossStateAmount: Amount of boss animation states
     - bossScene: Hashcode of the boss arena
 
-Frame stacking: 4 frames
+**Frame stacking**: 4 frames
 
 ## Reward Function
 
@@ -81,7 +81,7 @@ Frame stacking: 4 frames
 
 ### Requirements
 - Hollow Knight (Tested on Steam version)
-- BepInEx 5.4.x
+- BepInEx 5.4.x https://www.nexusmods.com/hollowknightsilksong/mods/26
 - Python used 3.13.9
 - vgamepad, torch, numpy (see requirements.txt)
 

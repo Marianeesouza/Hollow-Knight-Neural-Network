@@ -10,6 +10,7 @@ from Python.Src.Models.NeuralNetTraining import NeuralNetTraining
 from Python.Src.Utils.NeuralNetUtilities import NeuralNetUtilities
 from Python.Src.Data.RolloutBuffer import RolloutBuffer
 from Python.Src.Utils.VirtualGamePad import VirtualGamePad
+from Python.Src.Utils.StatsUtilities import StatsUtilities
 from collections import deque
 
 SAVE_INTERVAL = 90000
@@ -46,7 +47,7 @@ def main():
     best_mean_reward = -float('inf')
 
     is_ai_running = False
-    is_training = True
+    is_training = False
 
     old_state = None
     old_data = None
@@ -64,6 +65,7 @@ def main():
             if state is None:
                 print("⚠️ Connection lost.")
                 save_data(is_ai_running, actor_critic, ppo_trainer, is_training, episodes_counter, reward_stack, episode_stats, mean_stats, best_mean_reward)
+                StatsUtilities.plot_graph(episode_stats, mean_stats)
                 break
                 # if is_ai_running and actor_critic is not None and is_training:
                 #     NeuralNetUtilities.save_model(actor_critic, ppo_trainer.optimizer)
@@ -92,7 +94,6 @@ def main():
                 print('mean_stats amount: ', len(mean_stats))
                 print('best performance: ', best_mean_reward)
 
-                #return
                 is_ai_running = True
 
             if not is_ai_running:
@@ -183,6 +184,7 @@ def main():
                 if frames_count > 0 and frames_count % SAVE_INTERVAL == 0:
                     NeuralNetUtilities.save_model(actor_critic, ppo_trainer.optimizer)
                     FileUtilities.save_file(FILE_NAME, episodes_counter, reward_stack, episode_stats, mean_stats, best_mean_reward)
+                    StatsUtilities.plot_graph(episode_stats, mean_stats)
 
     except KeyboardInterrupt:
         save_data(is_ai_running, actor_critic, ppo_trainer, is_training, episodes_counter, reward_stack, episode_stats, mean_stats, best_mean_reward)

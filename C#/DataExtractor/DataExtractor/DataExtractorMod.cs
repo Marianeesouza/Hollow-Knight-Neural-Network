@@ -47,7 +47,7 @@ public class DataExtractorMod : BaseUnityPlugin
         pipeThread.Start(); // initiating thread process here
                             // 
 
-        //Time.timeScale = 3f;
+        Time.timeScale = 3f;
     }
 
     private void FixedUpdate()
@@ -283,21 +283,19 @@ public class DataExtractorMod : BaseUnityPlugin
                     {
                         if (fsm.FsmName == "Control")
                         {
-                            // 1. Pega o nome do estado atual
                             string stateName = fsm.ActiveStateName;
 
-                            // 2. Encontra o 'int' (índice) desse estado dentro do array do PlayMaker
                             int stateInt = -1;
                             for (int j = 0; j < fsm.FsmStates.Length; j++)
                             {
                                 if (fsm.FsmStates[j].Name == stateName)
                                 {
-                                    stateInt = j; // Encontrou o seu int de referência!
+                                    stateInt = j;
                                     break;
                                 }
                             }
 
-                            //Time.timeScale = 3f;
+                            Time.timeScale = 3f;
 
                             // Position flags
                             playerState.bx = boss.transform.position.x;
@@ -332,26 +330,26 @@ public class DataExtractorMod : BaseUnityPlugin
     }
 }
 
-//[HarmonyPatch(typeof(HeroController), "Die")]
-//public class HeroControllerDiePatch
-//{
-//    [HarmonyPrefix]
-//    public static bool Prefix()
-//    {
-//        DataExtractorMod.Instance?.StartDeathReload();
+[HarmonyPatch(typeof(HeroController), "Die")]
+public class HeroControllerDiePatch
+{
+    [HarmonyPrefix]
+    public static bool Prefix()
+    {
+        DataExtractorMod.Instance?.StartDeathReload();
 
-//        return false;
-//    }
-//}
+        return false;
+    }
+}
 
-//[HarmonyPatch(typeof(HealthManager), "Die")]
-//public class HealthManagerDiePatch
-//{
-//    [HarmonyPrefix]
-//    public static bool Prefix()
-//    {
-//        DataExtractorMod.Instance?.StartDeathReload();
-//        return false;
-//    }
-//}
+[HarmonyPatch(typeof(HealthManager), "Die")]
+public class HealthManagerDiePatch
+{
+    [HarmonyPrefix]
+    public static bool Prefix()
+    {
+        DataExtractorMod.Instance?.StartDeathReload();
+        return false;
+    }
+}
 

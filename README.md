@@ -9,8 +9,8 @@ This project combines a Unity mod to extract data from the game in real time wit
 
 ## Results
 
-- **Best mean reward**: x
-- Trained for x episodes
+- **Best mean reward**: 405.49
+- Trained for **5758** episodes
 
 ![demo](assets/hkgif.gif)
 

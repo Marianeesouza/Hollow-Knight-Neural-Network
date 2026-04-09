@@ -4,7 +4,7 @@ import numpy as np
 class StatsUtilities:
 
     @staticmethod
-    def plot_graph(x: np.ndarray, y: np.ndarray, title: str = 'Performance Graph'):
+    def plot_graph(x: np.ndarray, y: np.ndarray, title: str = 'Training Behavior'):
         plt.plot(x, y)
         plt.xlabel("Episodes")
         plt.ylabel("Mean Reward")

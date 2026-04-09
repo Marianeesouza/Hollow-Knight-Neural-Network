@@ -14,7 +14,7 @@ This project combines a Unity mod to extract data from the game in real time wit
 
 ![demo](assets/hkgif.gif)
 
-![video](assets/videolink.txt)
+<!-- ![video](assets/videolink.txt) -->
 
 ![graph](assets/performance_graph.png)
 

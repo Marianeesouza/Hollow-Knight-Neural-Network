@@ -1,0 +1,13 @@
+#/dataset/*
+
+**/__pycache__/
+
+*.pyc
+
+*.pkl
+
+*.h5
+
+*.pth
+*.pt
+*.pyc

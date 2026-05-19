@@ -39,6 +39,5 @@ class VirtualGamePad:
         self.gamepad.update()
 
     def update_trigger(self, value):
-
-        self.gamepad.right_trigger(value)
-        self.gamepad.update()
+        analog_value = 255 if value else 0
+        self.gamepad.right_trigger(analog_value)

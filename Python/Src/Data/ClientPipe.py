@@ -11,7 +11,7 @@ class Pipe:
 
     def connect(self):
         print("Waiting for Hollow Knight to open...")
-        while True:
+        while True:             
             try:
                 self.pipe = open(self.pipe_path, 'rb')
                 print("✅ Successfully connected!")
@@ -49,26 +49,26 @@ class Pipe:
                 "maxSoul": unpacked_data[7],
                 "facingRight": unpacked_data[8],
                 "onGround": unpacked_data[9],
-                #"falling": unpacked_data[10],
+                "falling": unpacked_data[10],
                 #"wallJumping": unpacked_data[11],
                 "jumping": unpacked_data[12],
-                #"doubleJumping": unpacked_data[13],
+                "doubleJumping": unpacked_data[13],
                 "dashing": unpacked_data[14],
-                #"dashCoolDown": unpacked_data[15],
-                #"shadowDashing": unpacked_data[16],
-                #"shadowDashCoolDown": unpacked_data[17],
+                "dashCoolDown": unpacked_data[15],
+                "shadowDashing": unpacked_data[16],
+                "shadowDashCoolDown": unpacked_data[17],
                 #"canFocus": unpacked_data[18],
-                #"focusing": unpacked_data[19],
+                "focusing": unpacked_data[19],
                 "invulnerable": unpacked_data[20],
                 "isAttacking": unpacked_data[21],
-                #"attackDuration": unpacked_data[22],
+                "attackDuration": unpacked_data[22],
                 #"attackRecoveryTime": unpacked_data[23],
                 #"attackCooldownTime": unpacked_data[24],
-                #"attackForward": unpacked_data[25],
-                #"attackUp": unpacked_data[26],
-                #"attackDown": unpacked_data[27],
-                #"canCast": unpacked_data[28],
-                #"casting": unpacked_data[29],
+                "attackForward": unpacked_data[25],
+                "attackUp": unpacked_data[26],
+                "attackDown": unpacked_data[27],
+                "canCast": unpacked_data[28],
+                "casting": unpacked_data[29],
                 "bx": unpacked_data[30],
                 "by": unpacked_data[31],
                 'bvx': unpacked_data[32],

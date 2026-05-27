@@ -82,56 +82,51 @@ def extract_and_log(pipe: ClientPipe.Pipe = None, target_hash: int = 423158243, 
     if created_pipe:
         pipe.connect()
 
-    gravando = False
+    recording = False
     csv_atual_path = None
-    samples_da_sessao = 0
+    session_samples = 0
 
-    print(f"👀 Automatizador de Demonstrações Iniciado.")
+    print(f"Automatizador de Demonstrações Iniciado.")
     print(f"Alvo: Sala Hash {target_hash} | Pasta: {dataset_dir}")
 
     try:
         while True:
             state = pipe.read_state()
             
-            # Se o pipe falhar temporariamente em um frame, não derruba o script, apenas pula
             if state is None:
                 time.sleep(0.005)
                 continue
 
-            cena_atual = int(state.get('bossScene', 0))
-            esta_ativo = is_game_state_active(state)
+            actual_scene = int(state.get('bossScene', 0))
+            is_active = is_game_state_active(state)
 
             # --- MAQUINA DE ESTADOS DA AUTOMAÇÃO ---
-            if not gravando:
-                # Condição 1: Estamos na sala certa? O jogo está despausado/jogável?
-                if cena_atual == target_hash and esta_ativo:
-                    # Condição 2: Aguarda até o jogador encostar no controle
+            if not recording:
+                
+                if actual_scene == target_hash and is_active:
+                    
                     gp_snapshot = capturar_snapshot_gamepad()
                     if detectou_movimento_no_gamepad(gp_snapshot):
-                        # Cria um arquivo totalmente novo baseado no timestamp atual (Ex: demo_1715882400.csv)
                         timestamp_id = int(time.time())
                         csv_atual_path = os.path.join(dataset_dir, f"demo_{timestamp_id}_hash{target_hash}.csv")
                         
-                        gravando = True
-                        samples_da_sessao = 0
+                        recording = True
+                        session_samples = 0
                         print(f"\n▶️ Movimento detectado na sala alvo! Gravando em: {csv_atual_path}")
                         
-                        # Grava o frame inicial usando a sua função ajustada
                         FileUtilities.write_state_inputs_to_csv(state, gp_snapshot, csv_path=csv_atual_path, overwrite=True)
-                        samples_da_sessao += 1
+                        session_samples += 1
             else:
-                # Condição de Parada: Se mudou de sala OU morreu/saiu pro menu (deixou de estar ativo)
-                if cena_atual != target_hash or not esta_ativo:
-                    print(f"\n⏹️ Demonstração finalizada e salva! Total de frames: {samples_da_sessao}")
-                    gravando = False
+                if actual_scene != target_hash or not is_active:
+                    print(f"\n⏹️ Demonstração finalizada e salva! Total de frames: {session_samples}")
+                    recording = False
                     csv_atual_path = None
-                    samples_da_sessao = 0
+                    session_samples = 0
                 else:
-                    # Continua a gravação frame a frame (utilizando overwrite=False para acumular no arquivo criado)
                     gp_snapshot = capturar_snapshot_gamepad()
                     FileUtilities.write_state_inputs_to_csv(state, gp_snapshot, csv_path=csv_atual_path, overwrite=False)
-                    samples_da_sessao += 1
-                    print(f"\rFrames capturados nesta demonstração: {samples_da_sessao}", end="", flush=True)
+                    session_samples += 1
+                    print(f"\rFrames capturados nesta demonstração: {session_samples}", end="", flush=True)
 
             # Controla o ciclo de repetição (padrão 0.0166s para espelhar 60 FPS)
             if poll_interval > 0:
@@ -180,13 +175,13 @@ def mapear_snapshot_para_virtual_actions(inputs: dict, threshold: float = 0.2) -
         pass
 
     # --- 4. Botões Digitais (IDs 5, 7 e 8) ---
-    mapeamento_botoes = {
+    map_buttons = {
         'btn_a': 5,  # jump
         'btn_x': 7,  # attack
         'btn_b': 8,  # cast / heal
     }
 
-    for csv_key, action_id in mapeamento_botoes.items():
+    for csv_key, action_id in map_buttons.items():
         val = inputs.get(csv_key, 0)
         try:
             if float(val) >= 0.5:
@@ -210,14 +205,14 @@ def replay_inputs_from_csv(csv_path: str = 'hk_data.csv', frame_delay: float = 0
     while True:
         state = pipe.read_state()
         if state is not None and is_game_state_active(state):
-            print("✅ Jogo ativo detectado! Iniciando replay...")
+            print("Jogo ativo detectado! Iniciando replay...")
             break
         time.sleep(0.1)
     
     pipe.disconnect()
     
     v_gamepad = VirtualGamePad()
-    print("✅ Gamepad virtual inicializado via classe com sucesso!")
+    print("Gamepad virtual inicializado via classe com sucesso!")
     
     rows = []
     with open(csv_path, 'r', newline='', encoding='utf-8') as f:
@@ -240,4 +235,4 @@ def replay_inputs_from_csv(csv_path: str = 'hk_data.csv', frame_delay: float = 0
         time.sleep(frame_delay)
         
     v_gamepad.update_gamepad([])
-    print(f"\n✅ Replay concluído com sucesso!")
+    print(f"\nReplay concluído com sucesso!")

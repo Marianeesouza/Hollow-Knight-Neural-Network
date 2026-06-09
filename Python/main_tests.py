@@ -8,6 +8,8 @@ from Src.Data.DataHandler import DataHandler
 from Src.Utils.VirtualGamePad import VirtualGamePad
 from Src.Models.CNN_HollowKnight import CNN_HollowKnight
 from Src.Models.MLP_HollowKnight import MLP_HollowKnight
+from Src.Models.MLP_Temporal import MLP_Temporal
+from Src.Models.GRU_HollowKnight import GRU_HollowKnight
 import torch.nn.functional as F
 import torch.nn as nn
 
@@ -44,8 +46,14 @@ def main():
     elif TIPO_MODELO == "MLP":
         modelo = MLP_HollowKnight(num_features=104, num_acoes=10, taxa_dropout=0.2)
         caminho_pesos = r'Python\Checkpoints\BC_weights\melhor_modelo_hollowknight.pth'
+    elif TIPO_MODELO == "MLP_TEMPORAL":
+        modelo = MLP_Temporal(num_features=104, num_acoes=10, tamanho_janela=NUM_FRAMES)
+        caminho_pesos = r'Python\Checkpoints\BC_weights\melhor_modelo_mlp_temporal.pth'
+    elif TIPO_MODELO == "GRU":
+        modelo = GRU_HollowKnight(num_features=104, num_acoes=10, tamanho_janela=NUM_FRAMES)
+        caminho_pesos = r'Python\Checkpoints\BC_weights\melhor_modelo_gru_hollowknight.pth'
     else:
-        raise ValueError("TIPO_MODELO inválido! Escolha 'CNN' ou 'MLP'.")
+        raise ValueError("TIPO_MODELO inválido! Escolha 'CNN', 'MLP', 'MLP_TEMPORAL' ou 'GRU'.")
 
     modelo.load_state_dict(torch.load(caminho_pesos, weights_only=True))
     modelo.eval()
@@ -76,7 +84,7 @@ def main():
                 continue
 
             # --- IF/ELSE: FORMATAÇÃO DO TENSOR DE ENTRADA ---
-            if TIPO_MODELO == "CNN":
+            if TIPO_MODELO in ("CNN", "MLP_TEMPORAL", "GRU"):
                 # Alimenta e mantém a janela temporal de 10 frames
                 if len(frame_stack) == 0:
                     for _ in range(NUM_FRAMES):

@@ -45,7 +45,7 @@ def main():
         caminho_pesos = r'Python\Checkpoints\BC_weights\melhor_modelo_cnn_hollowknight.pth'
     elif TIPO_MODELO == "MLP":
         modelo = MLP_HollowKnight(num_features=104, num_acoes=10, taxa_dropout=0.2)
-        caminho_pesos = r'Python\Checkpoints\BC_weights\melhor_modelo_hollowknight.pth'
+        caminho_pesos = r'Python\Checkpoints\BC_weights\melhor_modelo_mlp_hollowknight.pth'
     elif TIPO_MODELO == "MLP_TEMPORAL":
         modelo = MLP_Temporal(num_features=104, num_acoes=10, tamanho_janela=NUM_FRAMES)
         caminho_pesos = r'Python\Checkpoints\BC_weights\melhor_modelo_mlp_temporal.pth'
@@ -55,7 +55,9 @@ def main():
     else:
         raise ValueError("TIPO_MODELO inválido! Escolha 'CNN', 'MLP', 'MLP_TEMPORAL' ou 'GRU'.")
 
-    modelo.load_state_dict(torch.load(caminho_pesos, weights_only=True))
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
+    modelo.load_state_dict(torch.load(caminho_pesos, map_location=device, weights_only=True))
     modelo.eval()
     print(f"Cérebro da {TIPO_MODELO} carregado com sucesso!")
 
@@ -106,7 +108,7 @@ def main():
                 probabilidades = torch.sigmoid(logits)
                 acoes_binarias = (probabilidades > 0.2).int().squeeze(0).numpy()
                 
-            print(f"[{TIPO_MODELO}] Probs: {np.round(probabilidades.squeeze(0).numpy(), 2)} -> Ações: {acoes_binarias}")
+            #print(f"[{TIPO_MODELO}] Probs: {np.round(probabilidades.squeeze(0).numpy(), 2)} -> Ações: {acoes_binarias}")
 
             # --- TRADUTOR PARA O VIRTUALGAMEPAD ---
             active_actions = []

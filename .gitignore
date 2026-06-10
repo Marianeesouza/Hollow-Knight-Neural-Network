@@ -1,6 +1,7 @@
-#/dataset/*
+/dataset/*
 
 **/__pycache__/*
+/Python/Graphs/*
 
 *.pyc
 

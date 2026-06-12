@@ -16,7 +16,7 @@ class FileUtilities:
 
         with open(file_path, "wb") as file:
             pickle.dump(data, file, protocol=pickle.HIGHEST_PROTOCOL)
-            print(f"💾 Stats saved to {file_path}")
+            print(f"Stats saved to {file_path}")
 
     @staticmethod
     def load_file(file_name: str = 'stats.pkl'):
@@ -25,7 +25,7 @@ class FileUtilities:
 
         try:
             with open(file_path, "rb") as file:
-                print("💾 Stats loaded")
+                print("Stats loaded")
                 data = pickle.load(file)
 
                 if len(data) == 1 and isinstance(data[0], tuple):
@@ -53,7 +53,7 @@ class FileUtilities:
 
         with open(file_path, "wb") as file:
             pickle.dump(demonstrations, file, protocol=pickle.HIGHEST_PROTOCOL)
-            print(f"💾 Demonstrações salvas em {file_path}")
+            print(f"Demonstrações salvas em {file_path}")
 
     @staticmethod
     def load_demo(file_name: str = 'demos.pkl'):
@@ -62,10 +62,10 @@ class FileUtilities:
 
         try:
             with open(file_path, "rb") as file:
-                print("💾 Demonstrações carregadas")
+                print("Demonstrações carregadas")
                 return pickle.load(file)
         except FileNotFoundError:
-            print(f"⚠️ Arquivo de demonstrações não encontrado em {file_path}")
+            print(f"Arquivo de demonstrações não encontrado em {file_path}")
             return []
     
 
@@ -168,7 +168,7 @@ class FileUtilities:
                                 val_str = str(val_cru).strip().lower()
                                 row[coluna] = 1 if val_str in ['true', '1', '1.0'] else 0
 
-                            elif coluna in ["gp_trigger_left", "gp_axis_right_x", "gp_axis_right_y"]:
+                            elif coluna in ["gp_btn_back", "gp_btn_start", "gp_trigger_left", "gp_axis_right_x", "gp_axis_right_y"]:
                                 del row[coluna]
 
                         except (ValueError, TypeError):

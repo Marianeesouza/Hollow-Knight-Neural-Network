@@ -1,7 +1,6 @@
 /dataset/*
 
 **/__pycache__/*
-/Python/Graphs/*
 
 *.pyc
 
@@ -9,6 +8,8 @@
 
 *.h5
 
-*.pth
+#*.pth
 *.pt
 *.pyc
+
+.env

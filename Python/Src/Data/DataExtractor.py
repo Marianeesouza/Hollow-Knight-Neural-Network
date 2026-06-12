@@ -17,8 +17,7 @@ FILE_NAME = 'stats.pkl'
 
 KNOWN_GAMEPAD_COLUMNS = [
     'gp_axis_left_x', 'gp_axis_left_y', 'gp_trigger_right',
-    'gp_btn_a', 'gp_btn_b', 'gp_btn_x',
-    'gp_btn_back', 'gp_btn_start',
+    'gp_btn_a', 'gp_btn_b', 'gp_btn_x'
 ]
 
 
@@ -46,7 +45,6 @@ def detectou_movimento_no_gamepad(inputs: dict) -> bool:
     botoes_e_gatilhos = [
         'btn_a', 'btn_b', 'btn_x', 'btn_y', 
         'bumper_left', 'bumper_right', 
-        'btn_back', 'btn_start',
         'trigger_left', 'trigger_right'
     ]
 

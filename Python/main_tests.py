@@ -6,6 +6,7 @@ import time
 from Src.Data import ClientPipe
 from Src.Data.DataHandler import DataHandler
 from Src.Utils.VirtualGamePad import VirtualGamePad
+from Src.Utils.TestLogger import TestLogger
 from Src.Models.CNN_HollowKnight import CNN_HollowKnight
 from Src.Models.MLP_HollowKnight import MLP_HollowKnight
 from Src.Models.MLP_Temporal import MLP_Temporal
@@ -13,8 +14,8 @@ from Src.Models.GRU_HollowKnight import GRU_HollowKnight
 import torch.nn.functional as F
 import torch.nn as nn
 
-# Altere para "CNN" ou "MLP" dependendo do modelo que quer testar
-TIPO_MODELO = "MLP"  
+TIPO_MODELO = "GRU"
+USE_LOGGER = True 
 
 NUM_FRAMES = 10             # Tamanho da janela temporal
 BOSS_SCENE_HASH = 423158243 # Código da Hornet
@@ -31,7 +32,6 @@ def main():
     while True:
         try:
             pipe.connect()
-            print("✅ Conectado com sucesso ao jogo!")
             break
         except OSError:
             time.sleep(2)
@@ -39,18 +39,20 @@ def main():
     virtual_gamepad = VirtualGamePad()
     frame_stack = deque(maxlen=NUM_FRAMES)
 
+    logger = TestLogger(TIPO_MODELO, BOSS_SCENE_HASH) if USE_LOGGER else None
+
     # --- IF/ELSE: INICIALIZAÇÃO DO MODELO ---
     if TIPO_MODELO == "CNN":
-        modelo = CNN_HollowKnight(num_features=104, num_acoes=10, tamanho_janela=NUM_FRAMES)
+        modelo = CNN_HollowKnight(num_features=104, num_acoes=8, tamanho_janela=NUM_FRAMES)
         caminho_pesos = r'Python\Checkpoints\BC_weights\melhor_modelo_cnn_hollowknight.pth'
     elif TIPO_MODELO == "MLP":
-        modelo = MLP_HollowKnight(num_features=104, num_acoes=10, taxa_dropout=0.2)
+        modelo = MLP_HollowKnight(num_features=104, num_acoes=8, taxa_dropout=0.2)
         caminho_pesos = r'Python\Checkpoints\BC_weights\melhor_modelo_mlp_hollowknight.pth'
     elif TIPO_MODELO == "MLP_TEMPORAL":
-        modelo = MLP_Temporal(num_features=104, num_acoes=10, tamanho_janela=NUM_FRAMES)
+        modelo = MLP_Temporal(num_features=104, num_acoes=8, tamanho_janela=NUM_FRAMES)
         caminho_pesos = r'Python\Checkpoints\BC_weights\melhor_modelo_mlp_temporal.pth'
     elif TIPO_MODELO == "GRU":
-        modelo = GRU_HollowKnight(num_features=104, num_acoes=10, tamanho_janela=NUM_FRAMES)
+        modelo = GRU_HollowKnight(num_features=104, num_acoes=8, tamanho_janela=NUM_FRAMES)
         caminho_pesos = r'Python\Checkpoints\BC_weights\melhor_modelo_gru_hollowknight.pth'
     else:
         raise ValueError("TIPO_MODELO inválido! Escolha 'CNN', 'MLP', 'MLP_TEMPORAL' ou 'GRU'.")
@@ -62,53 +64,64 @@ def main():
     print(f"Cérebro da {TIPO_MODELO} carregado com sucesso!")
 
     is_ai_running = False
+    acoes_binarias = None
 
     try:
         while True:
             state = pipe.read_state()
             if state is None:
-                print("⚠️ Conexão perdida.")
+                print("Conexão perdida.")
                 break
 
-            boss_scene = state['bossScene']
+            if USE_LOGGER and logger is not None:
+                is_ai_running = logger.monitor_frame(state, acoes_binarias)
+                
+                if not is_ai_running and len(frame_stack) > 0:
+                    frame_stack.clear()
+            else:
+                boss_scene = state.get('bossScene')
+                current_hp_player = state.get('hp', 0)
+                
+                if boss_scene == BOSS_SCENE_HASH:
+                    is_ai_running = True
+                    
+                if current_hp_player <= 0 or (boss_scene is not None and boss_scene != BOSS_SCENE_HASH):
+                    if is_ai_running:
+                        print("Fim da luta (Logger Desativado).")
+                    is_ai_running = False
+                    frame_stack.clear()
 
-            # Limpeza estrita de chaves para bater com as 104 colunas do treat_data
+            if not is_ai_running:
+                acoes_binarias = None
+                virtual_gamepad.update_gamepad([])
+                continue
+
             state_limpo = {}
             for chave in CHAVES_TREINO:
                 state_limpo[chave] = state.get(chave, 0.0)
 
-            data = DataHandler.treat_data(state_limpo) 
+            data = DataHandler.treat_data(state_limpo)
 
-            if (boss_scene is not None and boss_scene == BOSS_SCENE_HASH):
-                is_ai_running = True
-
-            if not is_ai_running:
-                continue
-
-            # --- IF/ELSE: FORMATAÇÃO DO TENSOR DE ENTRADA ---
+            # --- FORMATAÇÃO DO TENSOR DE ENTRADA ---
             if TIPO_MODELO in ("CNN", "MLP_TEMPORAL", "GRU"):
-                # Alimenta e mantém a janela temporal de 10 frames
                 if len(frame_stack) == 0:
                     for _ in range(NUM_FRAMES):
                         frame_stack.append(data)
                 else:
                     frame_stack.append(data)
 
-                # Cria o formato 3D esperado pela CNN -> (1, 10, 104)
                 stacked_data = np.array(frame_stack, dtype=np.float32)
-                state_tensor = torch.FloatTensor(stacked_data).unsqueeze(0)
+                state_tensor = torch.FloatTensor(stacked_data).unsqueeze(0).to(device)
                 
             elif TIPO_MODELO == "MLP":
                 # Ignora o histórico e envia apenas o frame atual em 2D -> (1, 104)
-                state_tensor = torch.FloatTensor(data).unsqueeze(0)
+                state_tensor = torch.FloatTensor(data).unsqueeze(0).to(device)
 
             # --- INFERÊNCIA DA REDE ---
             with torch.no_grad():
                 logits = modelo(state_tensor)
-                probabilidades = torch.sigmoid(logits)
-                acoes_binarias = (probabilidades > 0.2).int().squeeze(0).numpy()
-                
-            #print(f"[{TIPO_MODELO}] Probs: {np.round(probabilidades.squeeze(0).numpy(), 2)} -> Ações: {acoes_binarias}")
+                probs = torch.sigmoid(logits)
+                acoes_binarias = (probs > 0.2).int().squeeze(0).cpu().numpy()
 
             # --- TRADUTOR PARA O VIRTUALGAMEPAD ---
             active_actions = []
@@ -120,16 +133,15 @@ def main():
             if acoes_binarias[3] == 1: active_actions.append(7) # Ataque (X)
             
             # Movimentação (D-PAD)
-            if acoes_binarias[6] == 1: active_actions.append(3) # Esquerda
-            if acoes_binarias[7] == 1: active_actions.append(4) # Direita
-            if acoes_binarias[8] == 1: active_actions.append(1) # Cima
-            if acoes_binarias[9] == 1: active_actions.append(2) # Baixo
+            if acoes_binarias[4] == 1: active_actions.append(3) # Esquerda
+            if acoes_binarias[5] == 1: active_actions.append(4) # Direita
+            if acoes_binarias[6] == 1: active_actions.append(1) # Cima
+            if acoes_binarias[7] == 1: active_actions.append(2) # Baixo
 
             virtual_gamepad.update_gamepad(active_actions)
 
-            # Reinicia o bot se sair da arena
-            if (is_ai_running and boss_scene is not None and boss_scene != BOSS_SCENE_HASH):
-                print("⚠️ O jogador saiu da cena do chefe. Aguardando nova luta.")
+            if (not USE_LOGGER and is_ai_running and boss_scene is not None and boss_scene != BOSS_SCENE_HASH):
+                print("Aguardando nova luta.")
                 is_ai_running = False
                 frame_stack.clear()
 

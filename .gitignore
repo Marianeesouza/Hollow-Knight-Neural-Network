@@ -1,4 +1,4 @@
-/dataset/*
+#/dataset/*
 
 **/__pycache__/*
 
@@ -8,7 +8,7 @@
 
 *.h5
 
-#*.pth
+*.pth
 *.pt
 *.pyc
 

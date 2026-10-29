@@ -1,0 +1,1328 @@
+{
+  "_doc": "Registro de estados da FSM 'Control' da Hornet (state_id = índice em FsmStates). Preencha state_name (dump C# ou observação), confirme/corrija is_offensive e is_vulnerable e margue reviewed: true. is_offensive = ataque ativo (janela T_ameaca); is_vulnerable = vulnerável/recuperando (T_abertura). Bloco 'stats' é referência automática.",
+  "boss": "Hornet Protector",
+  "states": [
+    {
+      "state_id": 0,
+      "state_name": "Init",
+      "is_offensive": false,
+      "is_vulnerable": false,
+      "reviewed": false,
+      "notes": "",
+      "stats": {
+        "frames": 0,
+        "pct": 0.0,
+        "mean_abs_bvx": 0.0,
+        "mean_abs_bvy": 0.0,
+        "closing_frac": 0.0,
+        "mean_dist": null,
+        "offensive_score": 0.0
+      }
+    },
+    {
+      "state_id": 1,
+      "state_name": "Idle",
+      "is_offensive": false,
+      "is_vulnerable": false,
+      "reviewed": false,
+      "notes": "",
+      "stats": {
+        "frames": 14955,
+        "pct": 1.958,
+        "mean_abs_bvx": 0.0,
+        "mean_abs_bvy": 0.0,
+        "closing_frac": 0.096,
+        "mean_dist": 0.014,
+        "offensive_score": 0.019
+      }
+    },
+    {
+      "state_id": 2,
+      "state_name": "GDash Antic",
+      "is_offensive": false,
+      "is_vulnerable": false,
+      "reviewed": false,
+      "notes": "",
+      "stats": {
+        "frames": 32874,
+        "pct": 4.304,
+        "mean_abs_bvx": 0.0,
+        "mean_abs_bvy": 0.0,
+        "closing_frac": 0.293,
+        "mean_dist": 0.031,
+        "offensive_score": 0.059
+      }
+    },
+    {
+      "state_id": 3,
+      "state_name": "G Dash",
+      "is_offensive": true,
+      "is_vulnerable": false,
+      "reviewed": false,
+      "notes": "",
+      "stats": {
+        "frames": 18513,
+        "pct": 2.424,
+        "mean_abs_bvx": 24.997,
+        "mean_abs_bvy": 0.0,
+        "closing_frac": 0.041,
+        "mean_dist": 0.466,
+        "offensive_score": 0.508
+      }
+    },
+    {
+      "state_id": 4,
+      "state_name": "GDash Recover1",
+      "is_offensive": false,
+      "is_vulnerable": true,
+      "reviewed": false,
+      "notes": "",
+      "stats": {
+        "frames": 12478,
+        "pct": 1.634,
+        "mean_abs_bvx": 6.588,
+        "mean_abs_bvy": 0.0,
+        "closing_frac": 0.793,
+        "mean_dist": 0.146,
+        "offensive_score": 0.29
+      }
+    },
+    {
+      "state_id": 5,
+      "state_name": "GDash Recover2",
+      "is_offensive": false,
+      "is_vulnerable": false,
+      "reviewed": false,
+      "notes": "",
+      "stats": {
+        "frames": 6728,
+        "pct": 0.881,
+        "mean_abs_bvx": 0.404,
+        "mean_abs_bvy": 0.0,
+        "closing_frac": 0.853,
+        "mean_dist": 0.034,
+        "offensive_score": 0.179
+      }
+    },
+    {
+      "state_id": 6,
+      "state_name": "Pause",
+      "is_offensive": false,
+      "is_vulnerable": false,
+      "reviewed": false,
+      "notes": "",
+      "stats": {
+        "frames": 3,
+        "pct": 0.0,
+        "mean_abs_bvx": 0.0,
+        "mean_abs_bvy": 0.0,
+        "closing_frac": 0.0,
+        "mean_dist": NaN,
+        "offensive_score": 0.0
+      }
+    },
+    {
+      "state_id": 7,
+      "state_name": "Jump Antic",
+      "is_offensive": false,
+      "is_vulnerable": false,
+      "reviewed": false,
+      "notes": "",
+      "stats": {
+        "frames": 50832,
+        "pct": 6.655,
+        "mean_abs_bvx": 0.0,
+        "mean_abs_bvy": 0.0,
+        "closing_frac": 0.25,
+        "mean_dist": 0.044,
+        "offensive_score": 0.05
+      }
+    },
+    {
+      "state_id": 8,
+      "state_name": "Aim Jump",
+      "is_offensive": false,
+      "is_vulnerable": false,
+      "reviewed": false,
+      "notes": "",
+      "stats": {
+        "frames": 0,
+        "pct": 0.0,
+        "mean_abs_bvx": 0.0,
+        "mean_abs_bvy": 0.0,
+        "closing_frac": 0.0,
+        "mean_dist": null,
+        "offensive_score": 0.0
+      }
+    },
+    {
+      "state_id": 9,
+      "state_name": "Jump",
+      "is_offensive": false,
+      "is_vulnerable": false,
+      "reviewed": false,
+      "notes": "",
+      "stats": {
+        "frames": 2365,
+        "pct": 0.31,
+        "mean_abs_bvx": 10.557,
+        "mean_abs_bvy": 40.999,
+        "closing_frac": 0.219,
+        "mean_dist": 0.018,
+        "offensive_score": 0.555
+      }
+    },
+    {
+      "state_id": 10,
+      "state_name": "In Air",
+      "is_offensive": false,
+      "is_vulnerable": true,
+      "reviewed": false,
+      "notes": "",
+      "stats": {
+        "frames": 100539,
+        "pct": 13.162,
+        "mean_abs_bvx": 9.341,
+        "mean_abs_bvy": 19.348,
+        "closing_frac": 0.531,
+        "mean_dist": 0.442,
+        "offensive_score": 0.486
+      }
+    },
+    {
+      "state_id": 11,
+      "state_name": "Land",
+      "is_offensive": false,
+      "is_vulnerable": true,
+      "reviewed": false,
+      "notes": "",
+      "stats": {
+        "frames": 22013,
+        "pct": 2.882,
+        "mean_abs_bvx": 0.0,
+        "mean_abs_bvy": 0.0,
+        "closing_frac": 0.547,
+        "mean_dist": 0.062,
+        "offensive_score": 0.109
+      }
+    },
+    {
+      "state_id": 12,
+      "state_name": "Re Aim",
+      "is_offensive": false,
+      "is_vulnerable": false,
+      "reviewed": false,
+      "notes": "",
+      "stats": {
+        "frames": 0,
+        "pct": 0.0,
+        "mean_abs_bvx": 0.0,
+        "mean_abs_bvy": 0.0,
+        "closing_frac": 0.0,
+        "mean_dist": null,
+        "offensive_score": 0.0
+      }
+    },
+    {
+      "state_id": 13,
+      "state_name": "Set ADash",
+      "is_offensive": false,
+      "is_vulnerable": false,
+      "reviewed": false,
+      "notes": "",
+      "stats": {
+        "frames": 0,
+        "pct": 0.0,
+        "mean_abs_bvx": 0.0,
+        "mean_abs_bvy": 0.0,
+        "closing_frac": 0.0,
+        "mean_dist": null,
+        "offensive_score": 0.0
+      }
+    },
+    {
+      "state_id": 14,
+      "state_name": "ADash Antic",
+      "is_offensive": false,
+      "is_vulnerable": true,
+      "reviewed": false,
+      "notes": "",
+      "stats": {
+        "frames": 23984,
+        "pct": 3.14,
+        "mean_abs_bvx": 0.0,
+        "mean_abs_bvy": 0.0,
+        "closing_frac": 0.079,
+        "mean_dist": 0.018,
+        "offensive_score": 0.016
+      }
+    },
+    {
+      "state_id": 15,
+      "state_name": "A Dash",
+      "is_offensive": true,
+      "is_vulnerable": false,
+      "reviewed": false,
+      "notes": "",
+      "stats": {
+        "frames": 19731,
+        "pct": 2.583,
+        "mean_abs_bvx": 18.12,
+        "mean_abs_bvy": 22.77,
+        "closing_frac": 0.311,
+        "mean_dist": 0.567,
+        "offensive_score": 0.652
+      }
+    },
+    {
+      "state_id": 16,
+      "state_name": "Land Y",
+      "is_offensive": false,
+      "is_vulnerable": false,
+      "reviewed": false,
+      "notes": "",
+      "stats": {
+        "frames": 0,
+        "pct": 0.0,
+        "mean_abs_bvx": 0.0,
+        "mean_abs_bvy": 0.0,
+        "closing_frac": 0.0,
+        "mean_dist": null,
+        "offensive_score": 0.0
+      }
+    },
+    {
+      "state_id": 17,
+      "state_name": "Fire",
+      "is_offensive": false,
+      "is_vulnerable": false,
+      "reviewed": false,
+      "notes": "",
+      "stats": {
+        "frames": 0,
+        "pct": 0.0,
+        "mean_abs_bvx": 0.0,
+        "mean_abs_bvy": 0.0,
+        "closing_frac": 0.0,
+        "mean_dist": null,
+        "offensive_score": 0.0
+      }
+    },
+    {
+      "state_id": 18,
+      "state_name": "Firing R",
+      "is_offensive": false,
+      "is_vulnerable": false,
+      "reviewed": false,
+      "notes": "",
+      "stats": {
+        "frames": 0,
+        "pct": 0.0,
+        "mean_abs_bvx": 0.0,
+        "mean_abs_bvy": 0.0,
+        "closing_frac": 0.0,
+        "mean_dist": null,
+        "offensive_score": 0.0
+      }
+    },
+    {
+      "state_id": 19,
+      "state_name": "Firing L",
+      "is_offensive": false,
+      "is_vulnerable": false,
+      "reviewed": false,
+      "notes": "",
+      "stats": {
+        "frames": 0,
+        "pct": 0.0,
+        "mean_abs_bvx": 0.0,
+        "mean_abs_bvy": 0.0,
+        "closing_frac": 0.0,
+        "mean_dist": null,
+        "offensive_score": 0.0
+      }
+    },
+    {
+      "state_id": 20,
+      "state_name": "Hit Roof",
+      "is_offensive": false,
+      "is_vulnerable": false,
+      "reviewed": false,
+      "notes": "",
+      "stats": {
+        "frames": 0,
+        "pct": 0.0,
+        "mean_abs_bvx": 0.0,
+        "mean_abs_bvy": 0.0,
+        "closing_frac": 0.0,
+        "mean_dist": null,
+        "offensive_score": 0.0
+      }
+    },
+    {
+      "state_id": 21,
+      "state_name": "Wall L",
+      "is_offensive": false,
+      "is_vulnerable": false,
+      "reviewed": false,
+      "notes": "",
+      "stats": {
+        "frames": 80,
+        "pct": 0.01,
+        "mean_abs_bvx": 0.0,
+        "mean_abs_bvy": 0.0,
+        "closing_frac": 0.637,
+        "mean_dist": 0.068,
+        "offensive_score": 0.127
+      }
+    },
+    {
+      "state_id": 22,
+      "state_name": "Jump R",
+      "is_offensive": false,
+      "is_vulnerable": false,
+      "reviewed": false,
+      "notes": "",
+      "stats": {
+        "frames": 0,
+        "pct": 0.0,
+        "mean_abs_bvx": 0.0,
+        "mean_abs_bvy": 0.0,
+        "closing_frac": 0.0,
+        "mean_dist": null,
+        "offensive_score": 0.0
+      }
+    },
+    {
+      "state_id": 23,
+      "state_name": "Wall R",
+      "is_offensive": false,
+      "is_vulnerable": false,
+      "reviewed": false,
+      "notes": "",
+      "stats": {
+        "frames": 256,
+        "pct": 0.034,
+        "mean_abs_bvx": 0.0,
+        "mean_abs_bvy": 0.0,
+        "closing_frac": 0.941,
+        "mean_dist": 0.048,
+        "offensive_score": 0.188
+      }
+    },
+    {
+      "state_id": 24,
+      "state_name": "Jump L",
+      "is_offensive": false,
+      "is_vulnerable": false,
+      "reviewed": false,
+      "notes": "",
+      "stats": {
+        "frames": 0,
+        "pct": 0.0,
+        "mean_abs_bvx": 0.0,
+        "mean_abs_bvy": 0.0,
+        "closing_frac": 0.0,
+        "mean_dist": null,
+        "offensive_score": 0.0
+      }
+    },
+    {
+      "state_id": 25,
+      "state_name": "Sphere Antic G",
+      "is_offensive": false,
+      "is_vulnerable": false,
+      "reviewed": false,
+      "notes": "",
+      "stats": {
+        "frames": 7741,
+        "pct": 1.013,
+        "mean_abs_bvx": 0.0,
+        "mean_abs_bvy": 0.0,
+        "closing_frac": 0.212,
+        "mean_dist": 0.043,
+        "offensive_score": 0.042
+      }
+    },
+    {
+      "state_id": 26,
+      "state_name": "Sphere",
+      "is_offensive": false,
+      "is_vulnerable": false,
+      "reviewed": false,
+      "notes": "",
+      "stats": {
+        "frames": 8541,
+        "pct": 1.118,
+        "mean_abs_bvx": 0.0,
+        "mean_abs_bvy": 0.0,
+        "closing_frac": 0.04,
+        "mean_dist": 0.005,
+        "offensive_score": 0.008
+      }
+    },
+    {
+      "state_id": 27,
+      "state_name": "Sphere Recover",
+      "is_offensive": false,
+      "is_vulnerable": false,
+      "reviewed": false,
+      "notes": "",
+      "stats": {
+        "frames": 1247,
+        "pct": 0.163,
+        "mean_abs_bvx": 0.0,
+        "mean_abs_bvy": 0.0,
+        "closing_frac": 0.153,
+        "mean_dist": 0.015,
+        "offensive_score": 0.031
+      }
+    },
+    {
+      "state_id": 28,
+      "state_name": "Set Jump Only",
+      "is_offensive": false,
+      "is_vulnerable": false,
+      "reviewed": false,
+      "notes": "",
+      "stats": {
+        "frames": 0,
+        "pct": 0.0,
+        "mean_abs_bvx": 0.0,
+        "mean_abs_bvy": 0.0,
+        "closing_frac": 0.0,
+        "mean_dist": null,
+        "offensive_score": 0.0
+      }
+    },
+    {
+      "state_id": 29,
+      "state_name": "Set Sphere A",
+      "is_offensive": false,
+      "is_vulnerable": false,
+      "reviewed": false,
+      "notes": "",
+      "stats": {
+        "frames": 0,
+        "pct": 0.0,
+        "mean_abs_bvx": 0.0,
+        "mean_abs_bvy": 0.0,
+        "closing_frac": 0.0,
+        "mean_dist": null,
+        "offensive_score": 0.0
+      }
+    },
+    {
+      "state_id": 30,
+      "state_name": "Sphere Antic A",
+      "is_offensive": false,
+      "is_vulnerable": true,
+      "reviewed": false,
+      "notes": "",
+      "stats": {
+        "frames": 16723,
+        "pct": 2.189,
+        "mean_abs_bvx": 1.097,
+        "mean_abs_bvy": 3.127,
+        "closing_frac": 0.965,
+        "mean_dist": 0.071,
+        "offensive_score": 0.246
+      }
+    },
+    {
+      "state_id": 31,
+      "state_name": "Sphere A",
+      "is_offensive": false,
+      "is_vulnerable": false,
+      "reviewed": false,
+      "notes": "",
+      "stats": {
+        "frames": 28804,
+        "pct": 3.771,
+        "mean_abs_bvx": 0.0,
+        "mean_abs_bvy": 0.001,
+        "closing_frac": 0.387,
+        "mean_dist": 0.0,
+        "offensive_score": 0.077
+      }
+    },
+    {
+      "state_id": 32,
+      "state_name": "Sphere Recover A",
+      "is_offensive": false,
+      "is_vulnerable": false,
+      "reviewed": false,
+      "notes": "",
+      "stats": {
+        "frames": 7144,
+        "pct": 0.935,
+        "mean_abs_bvx": 0.0,
+        "mean_abs_bvy": 0.0,
+        "closing_frac": 0.001,
+        "mean_dist": 0.001,
+        "offensive_score": 0.0
+      }
+    },
+    {
+      "state_id": 33,
+      "state_name": "Sphere A End",
+      "is_offensive": false,
+      "is_vulnerable": false,
+      "reviewed": false,
+      "notes": "",
+      "stats": {
+        "frames": 0,
+        "pct": 0.0,
+        "mean_abs_bvx": 0.0,
+        "mean_abs_bvy": 0.0,
+        "closing_frac": 0.0,
+        "mean_dist": null,
+        "offensive_score": 0.0
+      }
+    },
+    {
+      "state_id": 34,
+      "state_name": "Aim Sphere Jump",
+      "is_offensive": false,
+      "is_vulnerable": false,
+      "reviewed": false,
+      "notes": "",
+      "stats": {
+        "frames": 0,
+        "pct": 0.0,
+        "mean_abs_bvx": 0.0,
+        "mean_abs_bvy": 0.0,
+        "closing_frac": 0.0,
+        "mean_dist": null,
+        "offensive_score": 0.0
+      }
+    },
+    {
+      "state_id": 35,
+      "state_name": "Throw Antic",
+      "is_offensive": false,
+      "is_vulnerable": false,
+      "reviewed": false,
+      "notes": "",
+      "stats": {
+        "frames": 37388,
+        "pct": 4.895,
+        "mean_abs_bvx": 0.0,
+        "mean_abs_bvy": 0.0,
+        "closing_frac": 0.277,
+        "mean_dist": 0.025,
+        "offensive_score": 0.055
+      }
+    },
+    {
+      "state_id": 36,
+      "state_name": "Throw",
+      "is_offensive": false,
+      "is_vulnerable": false,
+      "reviewed": false,
+      "notes": "",
+      "stats": {
+        "frames": 597,
+        "pct": 0.078,
+        "mean_abs_bvx": 0.0,
+        "mean_abs_bvy": 0.0,
+        "closing_frac": 0.059,
+        "mean_dist": 0.001,
+        "offensive_score": 0.012
+      }
+    },
+    {
+      "state_id": 37,
+      "state_name": "Thrown",
+      "is_offensive": false,
+      "is_vulnerable": false,
+      "reviewed": false,
+      "notes": "",
+      "stats": {
+        "frames": 54390,
+        "pct": 7.121,
+        "mean_abs_bvx": 0.0,
+        "mean_abs_bvy": 0.0,
+        "closing_frac": 0.002,
+        "mean_dist": 0.0,
+        "offensive_score": 0.0
+      }
+    },
+    {
+      "state_id": 38,
+      "state_name": "Throw Recover",
+      "is_offensive": false,
+      "is_vulnerable": false,
+      "reviewed": false,
+      "notes": "",
+      "stats": {
+        "frames": 16523,
+        "pct": 2.163,
+        "mean_abs_bvx": 0.0,
+        "mean_abs_bvy": 0.0,
+        "closing_frac": 0.067,
+        "mean_dist": 0.007,
+        "offensive_score": 0.013
+      }
+    },
+    {
+      "state_id": 39,
+      "state_name": "Lock?",
+      "is_offensive": false,
+      "is_vulnerable": false,
+      "reviewed": false,
+      "notes": "",
+      "stats": {
+        "frames": 0,
+        "pct": 0.0,
+        "mean_abs_bvx": 0.0,
+        "mean_abs_bvy": 0.0,
+        "closing_frac": 0.0,
+        "mean_dist": null,
+        "offensive_score": 0.0
+      }
+    },
+    {
+      "state_id": 40,
+      "state_name": "Lock L",
+      "is_offensive": false,
+      "is_vulnerable": false,
+      "reviewed": false,
+      "notes": "",
+      "stats": {
+        "frames": 0,
+        "pct": 0.0,
+        "mean_abs_bvx": 0.0,
+        "mean_abs_bvy": 0.0,
+        "closing_frac": 0.0,
+        "mean_dist": null,
+        "offensive_score": 0.0
+      }
+    },
+    {
+      "state_id": 41,
+      "state_name": "Lock R",
+      "is_offensive": false,
+      "is_vulnerable": false,
+      "reviewed": false,
+      "notes": "",
+      "stats": {
+        "frames": 0,
+        "pct": 0.0,
+        "mean_abs_bvx": 0.0,
+        "mean_abs_bvy": 0.0,
+        "closing_frac": 0.0,
+        "mean_dist": null,
+        "offensive_score": 0.0
+      }
+    },
+    {
+      "state_id": 42,
+      "state_name": "Lock UL",
+      "is_offensive": false,
+      "is_vulnerable": false,
+      "reviewed": false,
+      "notes": "",
+      "stats": {
+        "frames": 0,
+        "pct": 0.0,
+        "mean_abs_bvx": 0.0,
+        "mean_abs_bvy": 0.0,
+        "closing_frac": 0.0,
+        "mean_dist": null,
+        "offensive_score": 0.0
+      }
+    },
+    {
+      "state_id": 43,
+      "state_name": "Lock UR",
+      "is_offensive": false,
+      "is_vulnerable": false,
+      "reviewed": false,
+      "notes": "",
+      "stats": {
+        "frames": 0,
+        "pct": 0.0,
+        "mean_abs_bvx": 0.0,
+        "mean_abs_bvy": 0.0,
+        "closing_frac": 0.0,
+        "mean_dist": null,
+        "offensive_score": 0.0
+      }
+    },
+    {
+      "state_id": 44,
+      "state_name": "Flip?",
+      "is_offensive": false,
+      "is_vulnerable": false,
+      "reviewed": false,
+      "notes": "",
+      "stats": {
+        "frames": 0,
+        "pct": 0.0,
+        "mean_abs_bvx": 0.0,
+        "mean_abs_bvy": 0.0,
+        "closing_frac": 0.0,
+        "mean_dist": null,
+        "offensive_score": 0.0
+      }
+    },
+    {
+      "state_id": 45,
+      "state_name": "Run",
+      "is_offensive": false,
+      "is_vulnerable": false,
+      "reviewed": false,
+      "notes": "",
+      "stats": {
+        "frames": 52793,
+        "pct": 6.912,
+        "mean_abs_bvx": 8.0,
+        "mean_abs_bvy": 0.0,
+        "closing_frac": 0.167,
+        "mean_dist": 0.151,
+        "offensive_score": 0.193
+      }
+    },
+    {
+      "state_id": 46,
+      "state_name": "Move Choice A",
+      "is_offensive": false,
+      "is_vulnerable": false,
+      "reviewed": false,
+      "notes": "",
+      "stats": {
+        "frames": 0,
+        "pct": 0.0,
+        "mean_abs_bvx": 0.0,
+        "mean_abs_bvy": 0.0,
+        "closing_frac": 0.0,
+        "mean_dist": null,
+        "offensive_score": 0.0
+      }
+    },
+    {
+      "state_id": 47,
+      "state_name": "Hard Land",
+      "is_offensive": false,
+      "is_vulnerable": true,
+      "reviewed": false,
+      "notes": "",
+      "stats": {
+        "frames": 28504,
+        "pct": 3.732,
+        "mean_abs_bvx": 2.636,
+        "mean_abs_bvy": 0.0,
+        "closing_frac": 0.775,
+        "mean_dist": 0.113,
+        "offensive_score": 0.208
+      }
+    },
+    {
+      "state_id": 48,
+      "state_name": "G Sphere?",
+      "is_offensive": false,
+      "is_vulnerable": false,
+      "reviewed": false,
+      "notes": "",
+      "stats": {
+        "frames": 0,
+        "pct": 0.0,
+        "mean_abs_bvx": 0.0,
+        "mean_abs_bvy": 0.0,
+        "closing_frac": 0.0,
+        "mean_dist": null,
+        "offensive_score": 0.0
+      }
+    },
+    {
+      "state_id": 49,
+      "state_name": "Can Throw?",
+      "is_offensive": false,
+      "is_vulnerable": false,
+      "reviewed": false,
+      "notes": "",
+      "stats": {
+        "frames": 0,
+        "pct": 0.0,
+        "mean_abs_bvx": 0.0,
+        "mean_abs_bvy": 0.0,
+        "closing_frac": 0.0,
+        "mean_dist": null,
+        "offensive_score": 0.0
+      }
+    },
+    {
+      "state_id": 50,
+      "state_name": "Move Choice B",
+      "is_offensive": false,
+      "is_vulnerable": false,
+      "reviewed": false,
+      "notes": "",
+      "stats": {
+        "frames": 0,
+        "pct": 0.0,
+        "mean_abs_bvx": 0.0,
+        "mean_abs_bvy": 0.0,
+        "closing_frac": 0.0,
+        "mean_dist": null,
+        "offensive_score": 0.0
+      }
+    },
+    {
+      "state_id": 51,
+      "state_name": "Evade Antic",
+      "is_offensive": false,
+      "is_vulnerable": false,
+      "reviewed": false,
+      "notes": "",
+      "stats": {
+        "frames": 15088,
+        "pct": 1.975,
+        "mean_abs_bvx": 0.0,
+        "mean_abs_bvy": 0.0,
+        "closing_frac": 0.196,
+        "mean_dist": 0.109,
+        "offensive_score": 0.039
+      }
+    },
+    {
+      "state_id": 52,
+      "state_name": "Evade",
+      "is_offensive": true,
+      "is_vulnerable": false,
+      "reviewed": false,
+      "notes": "",
+      "stats": {
+        "frames": 11260,
+        "pct": 1.474,
+        "mean_abs_bvx": 19.921,
+        "mean_abs_bvy": 0.0,
+        "closing_frac": 0.252,
+        "mean_dist": 0.38,
+        "offensive_score": 0.449
+      }
+    },
+    {
+      "state_id": 53,
+      "state_name": "Dmg Response",
+      "is_offensive": false,
+      "is_vulnerable": false,
+      "reviewed": false,
+      "notes": "",
+      "stats": {
+        "frames": 0,
+        "pct": 0.0,
+        "mean_abs_bvx": 0.0,
+        "mean_abs_bvy": 0.0,
+        "closing_frac": 0.0,
+        "mean_dist": null,
+        "offensive_score": 0.0
+      }
+    },
+    {
+      "state_id": 54,
+      "state_name": "Dmg Idle",
+      "is_offensive": false,
+      "is_vulnerable": false,
+      "reviewed": false,
+      "notes": "",
+      "stats": {
+        "frames": 5201,
+        "pct": 0.681,
+        "mean_abs_bvx": 5.91,
+        "mean_abs_bvy": 0.0,
+        "closing_frac": 0.226,
+        "mean_dist": 0.208,
+        "offensive_score": 0.163
+      }
+    },
+    {
+      "state_id": 55,
+      "state_name": "Run Away?",
+      "is_offensive": false,
+      "is_vulnerable": false,
+      "reviewed": false,
+      "notes": "",
+      "stats": {
+        "frames": 0,
+        "pct": 0.0,
+        "mean_abs_bvx": 0.0,
+        "mean_abs_bvy": 0.0,
+        "closing_frac": 0.0,
+        "mean_dist": null,
+        "offensive_score": 0.0
+      }
+    },
+    {
+      "state_id": 56,
+      "state_name": "Evade Land",
+      "is_offensive": false,
+      "is_vulnerable": true,
+      "reviewed": false,
+      "notes": "",
+      "stats": {
+        "frames": 12504,
+        "pct": 1.637,
+        "mean_abs_bvx": 0.0,
+        "mean_abs_bvy": 0.0,
+        "closing_frac": 0.266,
+        "mean_dist": 0.029,
+        "offensive_score": 0.053
+      }
+    },
+    {
+      "state_id": 57,
+      "state_name": "After Evade",
+      "is_offensive": false,
+      "is_vulnerable": false,
+      "reviewed": false,
+      "notes": "",
+      "stats": {
+        "frames": 0,
+        "pct": 0.0,
+        "mean_abs_bvx": 0.0,
+        "mean_abs_bvy": 0.0,
+        "closing_frac": 0.0,
+        "mean_dist": null,
+        "offensive_score": 0.0
+      }
+    },
+    {
+      "state_id": 58,
+      "state_name": "Stun Start",
+      "is_offensive": false,
+      "is_vulnerable": false,
+      "reviewed": false,
+      "notes": "",
+      "stats": {
+        "frames": 0,
+        "pct": 0.0,
+        "mean_abs_bvx": 0.0,
+        "mean_abs_bvy": 0.0,
+        "closing_frac": 0.0,
+        "mean_dist": null,
+        "offensive_score": 0.0
+      }
+    },
+    {
+      "state_id": 59,
+      "state_name": "Stun Air",
+      "is_offensive": false,
+      "is_vulnerable": true,
+      "reviewed": false,
+      "notes": "",
+      "stats": {
+        "frames": 8599,
+        "pct": 1.126,
+        "mean_abs_bvx": 6.334,
+        "mean_abs_bvy": 10.057,
+        "closing_frac": 0.469,
+        "mean_dist": 0.306,
+        "offensive_score": 0.321
+      }
+    },
+    {
+      "state_id": 60,
+      "state_name": "Stun Land",
+      "is_offensive": false,
+      "is_vulnerable": true,
+      "reviewed": false,
+      "notes": "",
+      "stats": {
+        "frames": 75351,
+        "pct": 9.865,
+        "mean_abs_bvx": 0.0,
+        "mean_abs_bvy": 0.0,
+        "closing_frac": 0.066,
+        "mean_dist": 0.008,
+        "offensive_score": 0.013
+      }
+    },
+    {
+      "state_id": 61,
+      "state_name": "Stun Recover",
+      "is_offensive": false,
+      "is_vulnerable": false,
+      "reviewed": false,
+      "notes": "",
+      "stats": {
+        "frames": 0,
+        "pct": 0.0,
+        "mean_abs_bvx": 0.0,
+        "mean_abs_bvy": 0.0,
+        "closing_frac": 0.0,
+        "mean_dist": null,
+        "offensive_score": 0.0
+      }
+    },
+    {
+      "state_id": 62,
+      "state_name": "Inert",
+      "is_offensive": false,
+      "is_vulnerable": false,
+      "reviewed": false,
+      "notes": "",
+      "stats": {
+        "frames": 0,
+        "pct": 0.0,
+        "mean_abs_bvx": 0.0,
+        "mean_abs_bvy": 0.0,
+        "closing_frac": 0.0,
+        "mean_dist": null,
+        "offensive_score": 0.0
+      }
+    },
+    {
+      "state_id": 63,
+      "state_name": "Wake",
+      "is_offensive": false,
+      "is_vulnerable": false,
+      "reviewed": false,
+      "notes": "",
+      "stats": {
+        "frames": 0,
+        "pct": 0.0,
+        "mean_abs_bvx": 0.0,
+        "mean_abs_bvy": 0.0,
+        "closing_frac": 0.0,
+        "mean_dist": null,
+        "offensive_score": 0.0
+      }
+    },
+    {
+      "state_id": 64,
+      "state_name": "Do Sphere?",
+      "is_offensive": false,
+      "is_vulnerable": false,
+      "reviewed": false,
+      "notes": "",
+      "stats": {
+        "frames": 0,
+        "pct": 0.0,
+        "mean_abs_bvx": 0.0,
+        "mean_abs_bvy": 0.0,
+        "closing_frac": 0.0,
+        "mean_dist": null,
+        "offensive_score": 0.0
+      }
+    },
+    {
+      "state_id": 65,
+      "state_name": "Refight Ready",
+      "is_offensive": false,
+      "is_vulnerable": false,
+      "reviewed": false,
+      "notes": "",
+      "stats": {
+        "frames": 0,
+        "pct": 0.0,
+        "mean_abs_bvx": 0.0,
+        "mean_abs_bvy": 0.0,
+        "closing_frac": 0.0,
+        "mean_dist": null,
+        "offensive_score": 0.0
+      }
+    },
+    {
+      "state_id": 66,
+      "state_name": "Refight Wake",
+      "is_offensive": false,
+      "is_vulnerable": false,
+      "reviewed": false,
+      "notes": "",
+      "stats": {
+        "frames": 0,
+        "pct": 0.0,
+        "mean_abs_bvx": 0.0,
+        "mean_abs_bvy": 0.0,
+        "closing_frac": 0.0,
+        "mean_dist": null,
+        "offensive_score": 0.0
+      }
+    },
+    {
+      "state_id": 67,
+      "state_name": "Escalation",
+      "is_offensive": false,
+      "is_vulnerable": false,
+      "reviewed": false,
+      "notes": "",
+      "stats": {
+        "frames": 0,
+        "pct": 0.0,
+        "mean_abs_bvx": 0.0,
+        "mean_abs_bvy": 0.0,
+        "closing_frac": 0.0,
+        "mean_dist": null,
+        "offensive_score": 0.0
+      }
+    },
+    {
+      "state_id": 68,
+      "state_name": "Flourish",
+      "is_offensive": false,
+      "is_vulnerable": false,
+      "reviewed": false,
+      "notes": "",
+      "stats": {
+        "frames": 11372,
+        "pct": 1.489,
+        "mean_abs_bvx": 0.0,
+        "mean_abs_bvy": 0.0,
+        "closing_frac": 0.063,
+        "mean_dist": 0.073,
+        "offensive_score": 0.013
+      }
+    },
+    {
+      "state_id": 69,
+      "state_name": "Run Antic",
+      "is_offensive": false,
+      "is_vulnerable": false,
+      "reviewed": false,
+      "notes": "",
+      "stats": {
+        "frames": 46956,
+        "pct": 6.147,
+        "mean_abs_bvx": 0.0,
+        "mean_abs_bvy": 0.0,
+        "closing_frac": 0.106,
+        "mean_dist": 0.031,
+        "offensive_score": 0.021
+      }
+    },
+    {
+      "state_id": 70,
+      "state_name": "Set Scale",
+      "is_offensive": false,
+      "is_vulnerable": false,
+      "reviewed": false,
+      "notes": "",
+      "stats": {
+        "frames": 0,
+        "pct": 0.0,
+        "mean_abs_bvx": 0.0,
+        "mean_abs_bvy": 0.0,
+        "closing_frac": 0.0,
+        "mean_dist": null,
+        "offensive_score": 0.0
+      }
+    },
+    {
+      "state_id": 71,
+      "state_name": "Music",
+      "is_offensive": false,
+      "is_vulnerable": false,
+      "reviewed": false,
+      "notes": "",
+      "stats": {
+        "frames": 0,
+        "pct": 0.0,
+        "mean_abs_bvx": 0.0,
+        "mean_abs_bvy": 0.0,
+        "closing_frac": 0.0,
+        "mean_dist": null,
+        "offensive_score": 0.0
+      }
+    },
+    {
+      "state_id": 72,
+      "state_name": "GG Music",
+      "is_offensive": false,
+      "is_vulnerable": false,
+      "reviewed": false,
+      "notes": "",
+      "stats": {
+        "frames": 0,
+        "pct": 0.0,
+        "mean_abs_bvx": 0.0,
+        "mean_abs_bvy": 0.0,
+        "closing_frac": 0.0,
+        "mean_dist": null,
+        "offensive_score": 0.0
+      }
+    },
+    {
+      "state_id": 73,
+      "state_name": "GG Intro 1",
+      "is_offensive": false,
+      "is_vulnerable": false,
+      "reviewed": false,
+      "notes": "",
+      "stats": {
+        "frames": 5452,
+        "pct": 0.714,
+        "mean_abs_bvx": 0.0,
+        "mean_abs_bvy": 0.0,
+        "closing_frac": 0.001,
+        "mean_dist": 0.009,
+        "offensive_score": 0.0
+      }
+    },
+    {
+      "state_id": 74,
+      "state_name": "GG Fall",
+      "is_offensive": false,
+      "is_vulnerable": false,
+      "reviewed": false,
+      "notes": "",
+      "stats": {
+        "frames": 4125,
+        "pct": 0.54,
+        "mean_abs_bvx": 0.0,
+        "mean_abs_bvy": 27.381,
+        "closing_frac": 0.0,
+        "mean_dist": 0.545,
+        "offensive_score": 0.274
+      }
+    },
+    {
+      "state_id": 75,
+      "state_name": "GG Land",
+      "is_offensive": false,
+      "is_vulnerable": false,
+      "reviewed": false,
+      "notes": "",
+      "stats": {
+        "frames": 2182,
+        "pct": 0.286,
+        "mean_abs_bvx": 0.0,
+        "mean_abs_bvy": 0.0,
+        "closing_frac": 0.475,
+        "mean_dist": 0.029,
+        "offensive_score": 0.095
+      }
+    },
+    {
+      "state_id": 76,
+      "state_name": "GG Reset",
+      "is_offensive": false,
+      "is_vulnerable": false,
+      "reviewed": false,
+      "notes": "",
+      "stats": {
+        "frames": 0,
+        "pct": 0.0,
+        "mean_abs_bvx": 0.0,
+        "mean_abs_bvy": 0.0,
+        "closing_frac": 0.0,
+        "mean_dist": null,
+        "offensive_score": 0.0
+      }
+    }
+  ],
+  "hypothesis_offensive": [
+    3,
+    9,
+    10,
+    15,
+    52,
+    59
+  ],
+  "_thresholds": {
+    "offensive": 0.3,
+    "vulnerable": 0.35,
+    "min_frames": 30
+  }
+}

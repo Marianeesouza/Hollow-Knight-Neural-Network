@@ -7,11 +7,16 @@ from ..Utils.FileUtilities import FileUtilities
 from . import ClientPipe
 from .InputExtractor import capturar_snapshot_gamepad
 
+# Âncora na raiz do repositório (independe do diretório de execução):
+# .../repo/Python/Src/Data/DataExtractor.py → 4 níveis acima = raiz.
+_REPO_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(
+    os.path.dirname(os.path.abspath(__file__)))))
+
 SAVE_INTERVAL = 90000
 UPDATE_TIMESTEP = 4096
 BOSS_SCENE_HASH = 423158243 # Hornet
 NUM_FRAMES = 4
-DATASET_DIR = "dataset/hornet_boss"
+DATASET_DIR = os.path.join(_REPO_ROOT, "dataset", "hornet_boss")
 
 FILE_NAME = 'stats.pkl'
 

@@ -1,16 +1,17 @@
 import torch
 import numpy as np
 import statistics
+import argparse
 
-from Python.Src.Data import ClientPipe
-from Python.Src.Data.DataHandler import DataHandler
-from Python.Src.Models.ActorCritic import ActorCritic
-from Python.Src.Utils.FileUtilities import FileUtilities
-from Python.Src.Models.NeuralNetTraining import NeuralNetTraining
-from Python.Src.Utils.NeuralNetUtilities import NeuralNetUtilities
-from Python.Src.Data.RolloutBuffer import RolloutBuffer
-from Python.Src.Utils.VirtualGamePad import VirtualGamePad
-from Python.Src.Utils.StatsUtilities import StatsUtilities
+from Src.Data import ClientPipe
+from Src.Data.DataHandler import DataHandler
+from Src.Models.ActorCritic import ActorCritic
+from Src.Utils.FileUtilities import FileUtilities
+from Src.Models.NeuralNetTraining import NeuralNetTraining
+from Src.Utils.NeuralNetUtilities import NeuralNetUtilities
+from Src.Data.RolloutBuffer import RolloutBuffer
+from Src.Utils.VirtualGamePad import VirtualGamePad
+from Src.Utils.StatsUtilities import StatsUtilities
 from collections import deque
 
 SAVE_INTERVAL = 90000
@@ -25,7 +26,7 @@ def save_data(is_ai_running, actor_critic, ppo_trainer, is_training, *stats):
         NeuralNetUtilities.save_model(actor_critic, ppo_trainer.optimizer)
         FileUtilities.save_file(FILE_NAME, *stats)
 
-def main():
+def main(is_training: bool = False):
     pipe = ClientPipe.Pipe()
     pipe.connect()
 
@@ -47,7 +48,6 @@ def main():
     best_mean_reward = -float('inf')
 
     is_ai_running = False
-    is_training = False
 
     old_state = None
     old_data = None
@@ -67,10 +67,6 @@ def main():
                 save_data(is_ai_running, actor_critic, ppo_trainer, is_training, episodes_counter, reward_stack, episode_stats, mean_stats, best_mean_reward)
                 StatsUtilities.plot_graph(episode_stats, mean_stats)
                 break
-                # if is_ai_running and actor_critic is not None and is_training:
-                #     NeuralNetUtilities.save_model(actor_critic, ppo_trainer.optimizer)
-                #     FileUtilities.save_file(FILE_NAME, episodes_counter, reward_stack, episode_stats, mean_stats, best_mean_reward)
-                # break
 
             boss_scene = state['bossScene']
             data = DataHandler.treat_data(state)    # treating the data from the pipe
@@ -159,7 +155,7 @@ def main():
                         if len(reward_stack) == reward_stack.maxlen:
                             if current_mean > best_mean_reward:
                                 best_mean_reward = current_mean
-                                NeuralNetUtilities.save_model(actor_critic, ppo_trainer.optimizer, file_name='Checkpoints/Weights/HK_Model_best.pth')
+                                NeuralNetUtilities.save_model(actor_critic, ppo_trainer.optimizer, file_name='HK_Model_best.pth')
                                 print(f'New best performance: {current_mean}')
 
                         if episodes_counter % 10 == 0 and len(reward_stack) > 0:
@@ -188,13 +184,12 @@ def main():
 
     except KeyboardInterrupt:
         save_data(is_ai_running, actor_critic, ppo_trainer, is_training, episodes_counter, reward_stack, episode_stats, mean_stats, best_mean_reward)
-        # if is_ai_running and actor_critic is not None and is_training:
-        #     NeuralNetUtilities.save_model(actor_critic, ppo_trainer.optimizer)
-        #     FileUtilities.save_file(FILE_NAME, episodes_counter, reward_stack, episode_stats, mean_stats, best_mean_reward)
     finally:
         pipe.disconnect()
 
 if __name__ == "__main__":
-    main()
+    parser = argparse.ArgumentParser(description="Pipeline RL (PPO) do Hollow Knight")
+    parser.add_argument("--train", action="store_true", help="atualiza os pesos online (padrão: apenas inferência)")
+    main(is_training=parser.parse_args().train)
 
 

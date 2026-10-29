@@ -1,5 +1,8 @@
 import matplotlib.pyplot as plt
 import numpy as np
+import os
+
+from ..config import PROJECT_ROOT
 
 class StatsUtilities:
 
@@ -10,5 +13,5 @@ class StatsUtilities:
         plt.ylabel("Mean Reward")
         plt.title(title)
         plt.grid(True)
-        plt.savefig(r"D:\Documentos\Pasta Projetos\Hollow-Knight-Neural-Network\assets\performance_graph.png", dpi=300)
+        plt.savefig(os.path.join(PROJECT_ROOT, 'assets', 'performance_graph.png'), dpi=300)
         plt.show()

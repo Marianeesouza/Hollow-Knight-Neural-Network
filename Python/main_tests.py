@@ -4,9 +4,8 @@ import os
 from collections import deque
 import time
 
-CHECKPOINT_DIR = os.path.join(
-    os.path.dirname(os.path.abspath(__file__)), 'Checkpoints', 'BC_weights')
-
+from Src.config import (BC_WEIGHTS_DIR as CHECKPOINT_DIR, BOSS_SCENE_HASH, CHAVES_TREINO,
+                        BC_NUM_FEATURES, BC_NUM_ACTIONS, BC_NUM_FRAMES, BC_THRESHOLD)
 from Src.Data import ClientPipe
 from Src.Data.DataHandler import DataHandler
 from Src.Utils.CampaignManager import CampaignManager
@@ -24,10 +23,9 @@ CAMPANHA_MODELOS = ["CNN", "MLP", "MLP_TEMPORAL", "GRU"]
 LUTAS_POR_MODELO = 50
 TIPO_MODELO = "GRU"  # usado apenas quando CAMPANHA_MODELOS == []
 
-THRESHOLD = 0.2
+THRESHOLD = BC_THRESHOLD
 
-NUM_FRAMES = 10             # Tamanho da janela temporal (conforme treino)
-BOSS_SCENE_HASH = 423158243 # Código da Hornet
+NUM_FRAMES = BC_NUM_FRAMES  # Tamanho da janela temporal (conforme treino)
 
 # --- Reentrada automática: segura D-PAD cima e pulsa A até a luta começar ---
 AUTO_REENTER = True
@@ -35,26 +33,46 @@ REENTRY_PRESS_FRAMES = 6     # ~0.1s segurando A (loop ~60 fps)
 REENTRY_RELEASE_FRAMES = 24  # ~0.4s solto (ciclo de 30 frames = ~2 pulsos/s)
 REENTRY_STATUS_EVERY_SEC = 5.0
 
-# Lista oficial de chaves vinda do treino do Kaggle
-CHAVES_TREINO = ['attackDown', 'attackDuration', 'attackForward', 'attackUp', 'bossHp', 'bossMaxHp', 'bossScene', 'bossState', 'bossStateAmount', 'bvx', 'bvy', 'bx', 'by', 'canCast', 'casting', 'dashCoolDown', 'dashing', 'doubleJumping', 'facingRight', 'falling', 'focusing', 'hp', 'invulnerable', 'isAttacking', 'jumping', 'maxHp', 'maxSoul', 'onGround', 'pvx', 'pvy', 'px', 'py', 'shadowDashCoolDown', 'shadowDashing', 'soul']
+
+# nome -> (construtor, arquivo de pesos)
+MODEL_REGISTRY = {
+    "CNN": (lambda: CNN_HollowKnight(BC_NUM_FEATURES, BC_NUM_ACTIONS, NUM_FRAMES),
+            'melhor_modelo_cnn_hollowknight.pth'),
+    "MLP": (lambda: MLP_HollowKnight(BC_NUM_FEATURES, BC_NUM_ACTIONS, taxa_dropout=0.2),
+            'melhor_modelo_mlp_hollowknight.pth'),
+    "MLP_TEMPORAL": (lambda: MLP_Temporal(BC_NUM_FEATURES, BC_NUM_ACTIONS, NUM_FRAMES),
+                     'melhor_modelo_mlp_temporal.pth'),
+    "GRU": (lambda: GRU_HollowKnight(BC_NUM_FEATURES, BC_NUM_ACTIONS, NUM_FRAMES),
+            'melhor_modelo_gru_hollowknight.pth'),
+}
 
 
 def build_model(tipo):
-    if tipo == "CNN":
-        modelo = CNN_HollowKnight(num_features=104, num_acoes=8, tamanho_janela=NUM_FRAMES)
-        caminho_pesos = os.path.join(CHECKPOINT_DIR, 'melhor_modelo_cnn_hollowknight.pth')
-    elif tipo == "MLP":
-        modelo = MLP_HollowKnight(num_features=104, num_acoes=8, taxa_dropout=0.2)
-        caminho_pesos = os.path.join(CHECKPOINT_DIR, 'melhor_modelo_mlp_hollowknight.pth')
-    elif tipo == "MLP_TEMPORAL":
-        modelo = MLP_Temporal(num_features=104, num_acoes=8, tamanho_janela=NUM_FRAMES)
-        caminho_pesos = os.path.join(CHECKPOINT_DIR, 'melhor_modelo_mlp_temporal.pth')
-    elif tipo == "GRU":
-        modelo = GRU_HollowKnight(num_features=104, num_acoes=8, tamanho_janela=NUM_FRAMES)
-        caminho_pesos = os.path.join(CHECKPOINT_DIR, 'melhor_modelo_gru_hollowknight.pth')
+    if tipo not in MODEL_REGISTRY:
+        raise ValueError(f"Tipo inválido! Escolha entre {', '.join(MODEL_REGISTRY)}.")
+    construtor, arquivo = MODEL_REGISTRY[tipo]
+    return construtor(), os.path.join(CHECKPOINT_DIR, arquivo)
+
+
+# índice da saída da rede -> código de ação do VirtualGamePad
+ACTION_TO_PAD = (6, 5, 8, 7, 3, 4, 1, 2)  # Dash, Pulo(A), Cast(B), Ataque(X), Esq, Dir, Cima, Baixo
+
+
+def actions_to_pad(acoes_binarias):
+    """Traduz o vetor binário de 8 saídas da rede para os códigos do VirtualGamePad."""
+    return [ACTION_TO_PAD[i] for i, ativo in enumerate(acoes_binarias) if ativo == 1]
+
+
+def build_input_tensor(tipo, data, frame_stack, device):
+    """Monta o tensor de entrada: janela (1, T, F) para modelos temporais, (1, F) para MLP."""
+    if tipo == "MLP":
+        return torch.FloatTensor(data).unsqueeze(0).to(device)
+    if len(frame_stack) == 0:
+        frame_stack.extend([data] * NUM_FRAMES)
     else:
-        raise ValueError("Tipo inválido! Escolha 'CNN', 'MLP', 'MLP_TEMPORAL' ou 'GRU'.")
-    return modelo, caminho_pesos
+        frame_stack.append(data)
+    stacked = np.array(frame_stack, dtype=np.float32)
+    return torch.FloatTensor(stacked).unsqueeze(0).to(device)
 
 
 def load_campaign_models(tipos, device):
@@ -213,19 +231,7 @@ def main():
             data = DataHandler.treat_data(state_limpo)
 
             # --- FORMATAÇÃO DO TENSOR DE ENTRADA ---
-            if manager.tipo_atual in ("CNN", "MLP_TEMPORAL", "GRU"):
-                if len(frame_stack) == 0:
-                    for _ in range(NUM_FRAMES):
-                        frame_stack.append(data)
-                else:
-                    frame_stack.append(data)
-
-                stacked_data = np.array(frame_stack, dtype=np.float32)
-                state_tensor = torch.FloatTensor(stacked_data).unsqueeze(0).to(device)
-
-            elif manager.tipo_atual == "MLP":
-                # Ignora o histórico e envia apenas o frame atual em 2D -> (1, 104)
-                state_tensor = torch.FloatTensor(data).unsqueeze(0).to(device)
+            state_tensor = build_input_tensor(manager.tipo_atual, data, frame_stack, device)
 
             # --- INFERÊNCIA DA REDE ---
             with torch.no_grad():
@@ -238,21 +244,7 @@ def main():
             logger.log_frame(state, acoes_binarias, probs_numpy)
 
             # --- TRADUTOR PARA O VIRTUALGAMEPAD ---
-            active_actions = []
-
-            # Botões de Ação
-            if acoes_binarias[0] == 1: active_actions.append(6) # Dash
-            if acoes_binarias[1] == 1: active_actions.append(5) # Pulo (A)
-            if acoes_binarias[2] == 1: active_actions.append(8) # Cast (B)
-            if acoes_binarias[3] == 1: active_actions.append(7) # Ataque (X)
-
-            # Movimentação (D-PAD)
-            if acoes_binarias[4] == 1: active_actions.append(3) # Esquerda
-            if acoes_binarias[5] == 1: active_actions.append(4) # Direita
-            if acoes_binarias[6] == 1: active_actions.append(1) # Cima
-            if acoes_binarias[7] == 1: active_actions.append(2) # Baixo
-
-            virtual_gamepad.update_gamepad(active_actions)
+            virtual_gamepad.update_gamepad(actions_to_pad(acoes_binarias))
 
     except KeyboardInterrupt:
         if battle_active and ultimo_state is not None:

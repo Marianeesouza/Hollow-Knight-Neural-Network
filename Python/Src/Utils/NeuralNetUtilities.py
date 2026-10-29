@@ -2,13 +2,15 @@ import numpy as np
 import torch
 import os
 
+from ..config import WEIGHTS_DIR
+
 
 class NeuralNetUtilities:
 
     @staticmethod
     def save_model(actor_critic, optimizer, file_name: str = 'HK_Model.pth'):
 
-        file_path = os.path.join('Checkpoints', 'Weights', file_name)
+        file_path = os.path.join(WEIGHTS_DIR, file_name)
 
         checkpoint = {
             'model_state_dict': actor_critic.state_dict(),
@@ -20,7 +22,7 @@ class NeuralNetUtilities:
     @staticmethod
     def load_model(actor_critic, optimizer, file_name: str = 'HK_Model.pth'):
 
-        file_path = os.path.join('Checkpoints', 'Weights', file_name)
+        file_path = os.path.join(WEIGHTS_DIR, file_name)
 
         if os.path.exists(file_path):
             checkpoint = torch.load(file_path, weights_only=False)

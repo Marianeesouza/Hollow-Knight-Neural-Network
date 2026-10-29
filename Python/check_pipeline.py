@@ -1,4 +1,5 @@
 """Verificação rápida: equivalência do vetor de 104 features + smoke de métricas."""
+import glob
 import os
 import sys
 import numpy as np
@@ -7,21 +8,15 @@ PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, PROJECT_ROOT)
 sys.path.insert(0, os.path.join(PROJECT_ROOT, 'Python'))
 
+from Src.config import CHAVES_TREINO, DATASET_DIR
 from Src.Data.DataHandler import DataHandler                      # noqa
 from Src.Data.TelemetryDataset import load_session_csv, build_feature_matrix
 from Src.Utils.ContextMetrics import (MetricParams, compute_contextual_metrics,
                                       load_boss_state_config)
 
-CHAVES = ['attackDown', 'attackDuration', 'attackForward', 'attackUp', 'bossHp',
-          'bossMaxHp', 'bossScene', 'bossState', 'bossStateAmount', 'bvx', 'bvy',
-          'bx', 'by', 'canCast', 'casting', 'dashCoolDown', 'dashing',
-          'doubleJumping', 'facingRight', 'falling', 'focusing', 'hp',
-          'invulnerable', 'isAttacking', 'jumping', 'maxHp', 'maxSoul',
-          'onGround', 'pvx', 'pvy', 'px', 'py', 'shadowDashCoolDown',
-          'shadowDashing', 'soul']
+CHAVES = CHAVES_TREINO
 
-CSV = os.path.join(PROJECT_ROOT, 'dataset', 'hornet_boss',
-                   'demo_1780703999_hash423158243.csv')
+CSV = sys.argv[1] if len(sys.argv) > 1 else sorted(glob.glob(os.path.join(DATASET_DIR, 'demo_*.csv')))[-1]
 
 df = load_session_csv(CSV)
 print(f"Frames: {len(df)} | colunas: {len(df.columns)}")

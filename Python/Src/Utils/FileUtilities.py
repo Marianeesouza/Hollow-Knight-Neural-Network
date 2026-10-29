@@ -3,6 +3,7 @@ import pickle
 import os
 from collections import deque
 import time
+from ..config import STATISTIC_DIR
 from ..Data.InputExtractor import normalize_trigger, discretize_axis, discretize_trigger
 
 class FileUtilities:
@@ -10,7 +11,7 @@ class FileUtilities:
     @staticmethod
     def save_file(file_name: str = 'stats.pkl', *data):
 
-        file_path = os.path.join('Checkpoints', 'Statistic', file_name)
+        file_path = os.path.join(STATISTIC_DIR, file_name)
 
         os.makedirs(os.path.dirname(file_path), exist_ok=True)
 
@@ -21,7 +22,7 @@ class FileUtilities:
     @staticmethod
     def load_file(file_name: str = 'stats.pkl'):
 
-        file_path = os.path.join('Checkpoints', 'Statistic', file_name)
+        file_path = os.path.join(STATISTIC_DIR, file_name)
 
         try:
             with open(file_path, "rb") as file:
@@ -48,7 +49,7 @@ class FileUtilities:
     @staticmethod
     def save_demo(file_name: str = 'demos.pkl', demonstrations=None):
         """Salva o conjunto de demonstrações em disco."""
-        file_path = os.path.join('Checkpoints', 'Statistic', file_name)
+        file_path = os.path.join(STATISTIC_DIR, file_name)
         os.makedirs(os.path.dirname(file_path), exist_ok=True)
 
         with open(file_path, "wb") as file:
@@ -58,7 +59,7 @@ class FileUtilities:
     @staticmethod
     def load_demo(file_name: str = 'demos.pkl'):
         """Carrega um conjunto de demonstrações salvo."""
-        file_path = os.path.join('Checkpoints', 'Statistic', file_name)
+        file_path = os.path.join(STATISTIC_DIR, file_name)
 
         try:
             with open(file_path, "rb") as file:

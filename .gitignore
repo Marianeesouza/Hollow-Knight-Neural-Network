@@ -13,3 +13,17 @@
 *.pyc
 
 .env
+
+# Export pesado de arrays de re-treinamento (regenerável via Python/build_training_set.py)
+dataset/training_export/
+
+# IDE / build (não versionar)
+.vs/
+.idea/
+bin/
+obj/
+.pytest_cache/
+__pycache__/
+
+# Gerado por dataset/dataset_upload.py
+dataset/hornet_boss/dataset-metadata.json

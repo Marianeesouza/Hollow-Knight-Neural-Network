@@ -4,6 +4,7 @@ using HarmonyLib;
 using HutongGames.PlayMaker;
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.IO;
 using System.IO.Pipes;
 using System.Text;
@@ -28,6 +29,17 @@ public class DataExtractorMod : BaseUnityPlugin
 
     private AutoResetEvent frameReadyEvent = new AutoResetEvent(false);
 
+    // Dump one-shot dos nomes dos estados da FSM do boss
+    private bool bossStatesDumped = false;
+
+    // Velocidade de jogo imposta pelo mod (3f para os agentes; 1f quando
+    // você for jogar manualmente). Mudar aqui e recompilar.
+    private const float TARGET_TIMESCALE = 1f;
+
+    // Captura de tela na 1ª ocorrência de cada bossState na sessão
+    private readonly HashSet<int> capturedStates = new HashSet<int>();
+    private bool capturePending = false;
+
     private void Awake()
     {
         Instance = this;
@@ -47,7 +59,7 @@ public class DataExtractorMod : BaseUnityPlugin
         pipeThread.Start(); // initiating thread process here
                             // 
 
-        Time.timeScale = 3f;
+        Time.timeScale = TARGET_TIMESCALE;
     }
 
     private void FixedUpdate()
@@ -285,6 +297,8 @@ public class DataExtractorMod : BaseUnityPlugin
                         {
                             string stateName = fsm.ActiveStateName;
 
+                            DumpBossStates(fsm);
+
                             int stateInt = -1;
                             for (int j = 0; j < fsm.FsmStates.Length; j++)
                             {
@@ -295,7 +309,7 @@ public class DataExtractorMod : BaseUnityPlugin
                                 }
                             }
 
-                            Time.timeScale = 3f;
+                            Time.timeScale = TARGET_TIMESCALE;
 
                             // Position flags
                             playerState.bx = boss.transform.position.x;
@@ -315,11 +329,91 @@ public class DataExtractorMod : BaseUnityPlugin
                             // Behavior flags
                             playerState.bossState = stateInt;
                             playerState.bossStateAmount = fsm.FsmStates.Length;
+
+                            if (stateInt >= 0)
+                                QueueStateScreenshot(stateInt);
                         }
                     }
                 }
             }
         }
+    }
+
+    // Dumpa uma única vez por sessão os nomes FsmStates da FSM "Control" ao
+    // lado da DLL. Apague boss_states_dump.txt para forçar um re-dump na
+    // próxima sessão.
+    private void DumpBossStates(PlayMakerFSM fsm)
+    {
+        if (bossStatesDumped) return;
+        bossStatesDumped = true;
+
+        try
+        {
+            string dllDir = Path.GetDirectoryName(
+                System.Reflection.Assembly.GetExecutingAssembly().Location);
+            if (string.IsNullOrEmpty(dllDir))
+                dllDir = Directory.GetParent(Application.dataPath).FullName;
+
+            string path = Path.Combine(dllDir, "boss_states_dump.txt");
+            if (File.Exists(path)) return; // nomes são estáticos; não re-dumpa
+
+            var sb = new StringBuilder();
+            sb.AppendLine($"scene={GameManager.instance?.sceneName} "
+                          + $"fsm={fsm.FsmName} states={fsm.FsmStates.Length}");
+            for (int j = 0; j < fsm.FsmStates.Length; j++)
+                sb.AppendLine($"{j}\t{fsm.FsmStates[j].Name}");
+
+            File.WriteAllText(path, sb.ToString(), Encoding.UTF8);
+        }
+        catch (Exception)
+        {
+            // dump é best-effort: nunca interrompe a telemetria
+        }
+    }
+
+    // Captura de tela na primeira ocorrência de cada bossState dentro da
+    // sessão. As imagens vão para <pasta da DLL>\boss_state_shots\ e o
+    // captures_log.txt registra id -> arquivo (para conferência posterior).
+    // Apague a pasta boss_state_shots para recomeçar numa nova rodada.
+    private void QueueStateScreenshot(int stateId)
+    {
+        if (capturePending || !capturedStates.Add(stateId)) return;
+        capturePending = true;
+
+        try
+        {
+            string dllDir = Path.GetDirectoryName(
+                System.Reflection.Assembly.GetExecutingAssembly().Location);
+            if (string.IsNullOrEmpty(dllDir))
+                dllDir = Directory.GetParent(Application.dataPath).FullName;
+
+            string dir = Path.Combine(dllDir, "boss_state_shots");
+            Directory.CreateDirectory(dir);
+
+            string file = Path.Combine(dir,
+                $"state_{stateId:D2}.png");
+            ScreenCapture.CaptureScreenshot(file, 1);
+
+            string logPath = Path.Combine(dir, "captures_log.txt");
+            if (!File.Exists(logPath))
+                File.AppendAllText(logPath,
+                    $"sessao iniciada em {DateTime.Now:yyyy-MM-dd HH:mm:ss}\n",
+                    Encoding.UTF8);
+            File.AppendAllText(logPath,
+                $"{DateTime.Now:yyyy-MM-dd HH:mm:ss}\tstate={stateId}\t{file}\n",
+                Encoding.UTF8);
+        }
+        catch (Exception)
+        {
+            // captura é best-effort: nunca interrompe a telemetria
+        }
+    }
+
+    void Update()
+    {
+        // ScreenCapture aplica ao fim do frame: libera o flag no frame seguinte
+        if (capturePending)
+            capturePending = false;
     }
 
     void OnDestroy()

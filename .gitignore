@@ -27,3 +27,4 @@ __pycache__/
 
 # Gerado por dataset/dataset_upload.py
 dataset/hornet_boss/dataset-metadata.json
+dataset/test_runs/

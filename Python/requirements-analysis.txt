@@ -1,0 +1,7 @@
+-r requirements.txt
+scipy>=1.11
+scikit-learn>=1.4
+matplotlib==3.11.2
+plotly==6.9.0
+streamlit==1.59.1
+pytest==9.1.1

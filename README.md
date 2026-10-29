@@ -163,20 +163,20 @@ Raw gamepad snapshots captured by `InputExtractor` (via `pygame.joystick`) origi
 - `vgamepad`, `torch`, `numpy` (see `Python/requirements.txt`)
 
 ### Installation
-1. Move the `DataExtractor.dll` from `\C#\DataExtractor\bin\Debug` to your game's plugins folder:
+1. Copy `DataExtractor.dll` (repo root, or build `C#/DataExtractor/DataExtractor.sln` yourself — `bin/` and `obj/` are not versioned) to your game's plugins folder:
    `...\Hollow Knight\BepInEx\plugins`
 2. Install Python dependencies:
-   `pip install -r Python/requirements.txt`
+   `pip install -r Python/requirements.txt` (runtime) and, for the analysis dashboard/tests, `pip install -r Python/requirements-analysis.txt`
 
 ## Run
 
-The two pipelines use different Python import conventions, so they should be run from different working directories (see notes below).
+All entry points use the same import convention (`from Src...`) and absolute paths (`Src/config.py`), so **every script runs from inside `Python/`**.
 
 ### RL training (PPO)
-Run `main.py` from the **repository root** (it imports `from Python.Src...`):
-
 ```
-python Python/main.py
+cd Python
+python main.py            # inference only
+python main.py --train    # updates weights online (PPO)
 ```
 
 In-game, go to the **Hornet Protector** statue in the **Hall of Gods** and start the Attuned difficulty.
@@ -200,6 +200,8 @@ python main_extraction.py
 ```
 
 Recording starts automatically once you enter the Hornet arena and move the gamepad; stops when the fight ends. The dataset folder is post-normalized on exit via `FileUtilities.normalize_and_discretize`. The module also exposes `replay_inputs_from_csv(csv_path, frame_delay)` to play a previously recorded demo back through the virtual gamepad.
+
+> **Boss-state registry workflow (this fork):** for the step-by-step of the boss-state registry (`boss_state_config.json`), runtime state-name dump and per-state screenshots, see [`README_BOSS_STATES.md`](README_BOSS_STATES.md).
 
 ## Evaluation Metrics (BC)
 
@@ -227,27 +229,50 @@ Recording starts automatically once you enter the Hornet arena and move the game
 
 The recorded demonstrations live in `dataset/hornet_boss/` as `demo_<unix-timestamp>_hash<arena>.csv` files (one file per fight). `dataset/dataset_upload.py` pushes the folder to Kaggle as a versioned dataset (`<KAGGLE_USERNAME>/hollow-knight-dataset`, license CC0-1.0) using `python-dotenv` for credentials and writing `dataset/hornet_boss/dataset-metadata.json`.
 
+## Tests
+
+```
+python -m pytest        # from the repo root (config in pyproject.toml)
+python Python/check_pipeline.py [demo.csv]   # feature-equivalence smoke check
+```
+Tests that need `torch` are skipped when it is not installed.
+
+## Analysis & training-set tools
+
+- `analysis/` — statistical analysis of the evaluation runs, contextual loss/metrics and a Streamlit dashboard (`analysis/app.py`).
+- `Python/build_boss_state_registry.py` / `README_BOSS_STATES.md` — boss-state registry workflow.
+- `Python/build_training_set.py` — exports retraining arrays (`dataset/training_export/`, git-ignored).
+- `dataset/test_runs/` — frame-by-frame logs of each evaluation fight (git-ignored, regenerable).
+
+## Repository hygiene
+
+IDE/build artifacts (`.vs/`, `.idea/`, `bin/`, `obj/`, `__pycache__/`) are git-ignored. Model weights (`*.pth`) and the demonstration CSVs are still tracked for reproducibility; moving them to Git LFS / GitHub Releases / Kaggle only is recommended if the repository keeps growing.
+
 ## Project Structure
 
 ```
 .
 ├─ README.md
 ├─ all_model_tests.csv              # BC evaluation log (TestLogger output)
+├─ pyproject.toml                   # pytest config
+├─ analysis/                        # statistics, contextual metrics, Streamlit dashboard
+├─ C#/DataExtractor/                # Unity/BepInEx mod source
 ├─ DataExtractor.dll               # Unity mod (built into BepInEx plugins)
 ├─ dataset/
 │  ├─ hornet_boss/                  # recorded demonstrations (demo_*.csv)
 │  └─ dataset_upload.py             # Kaggle dataset uploader
 └─ Python/
-   ├─ main.py                       # RL pipeline (PPO) runner — run from repo root
-   ├─ main_tests.py                 # BC inference + evaluation — run from Python/
+   ├─ main.py                       # RL pipeline (PPO) runner (--train to update weights)
+   ├─ tests/                        # pytest suite
+   ├─ main_tests.py                 # BC inference + evaluation campaign (50 fights/model)
    ├─ main_extraction.py             # record demos via physical gamepad
-   ├─ requirements.txt
+   ├─ requirements.txt / requirements-analysis.txt
    ├─ Checkpoints/
    │  ├─ Weights/HK_Model_best.pth   # RL weights
    │  └─ BC_weights/melhor_modelo_<arch>_hollowknight.pth   # BC weights
    ├─ Graphs/                       # BC training curves
-   ├─ assets/
    └─ Src/
+      ├─ config.py                   # shared constants & absolute paths
       ├─ Data/                       # ClientPipe, DataHandler, InputExtractor, DataExtractor, RolloutBuffer
       ├─ Models/                     # ActorCritic, CNN/MLP/MLP_Temporal/RNN/GRU backbones, NeuralNetTraining (PPO)
       └─ Utils/                      # VirtualGamePad, TestLogger, FileUtilities, StatsUtilities, NeuralNetUtilities
